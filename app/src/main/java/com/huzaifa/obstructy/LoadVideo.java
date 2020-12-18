@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.MediaController;
 import android.widget.TextView;
@@ -61,8 +62,10 @@ public class LoadVideo extends AppCompatActivity {
         if (resCode == RESULT_OK && data != null) {
             Uri uri = data.getData();
             String videoPath = getPath(getApplicationContext(), uri);
+            Log.d("path", "onActivityResult: "+videoPath);
             Intent intent=new Intent(LoadVideo.this,EditVideo.class);
             intent.putExtra("videoPath",videoPath);
+            intent.setData(uri);
             startActivity(intent);
         }
     }
