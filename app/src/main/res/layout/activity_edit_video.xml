@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".EditVideo"
+    android:orientation="vertical"
+    android:weightSum="4"
+    android:background="@drawable/background">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:src="@drawable/app_bar_logo">
+    </ImageView>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2">
+
+        <VideoView
+            android:id="@+id/videoView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_gravity="center_horizontal">
+
+        </VideoView>
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@drawable/card2"
+        android:orientation="horizontal"
+        android:weightSum="4"
+        android:layout_marginTop="20dp">
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:paddingTop="20dp"
+            android:layout_gravity="center">
+
+            <TextView
+                android:id="@+id/removeObstruction"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/circle_background"
+                android:layout_gravity="center_vertical"
+                android:layout_marginHorizontal="9dp"
+                android:drawableTop="@drawable/ic_obstruction_removal"
+                android:paddingTop="25dp"
+                android:clickable="true">
+
+            </TextView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/removeObstruction"
+                android:layout_centerHorizontal="true"
+                android:text="Obstruction Removal "
+                android:textAlignment="center"
+                android:textColor="#FFFF"
+                android:textSize="18dp"
+                android:textStyle="bold"
+                android:layout_marginTop="10dp"
+                android:fontFamily="cursive"
+                android:gravity="center_horizontal">
+
+            </TextView>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:paddingTop="20dp"
+            android:layout_gravity="center">
+
+            <TextView
+                android:id="@+id/extractFrame"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/circle_background"
+                android:layout_gravity="center_vertical"
+                android:layout_marginHorizontal="9dp"
+                android:drawableTop="@drawable/ic_photo_extract"
+                android:paddingTop="25dp"
+                android:clickable="true">
+
+            </TextView>
+            <TextView
+                android:fontFamily="cursive"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/extractFrame"
+                android:layout_centerHorizontal="true"
+                android:text="Extract\nFrame"
+                android:textAlignment="center"
+                android:textColor="#FFFF"
+                android:textSize="18dp"
+                android:textStyle="bold"
+                android:layout_marginTop="10dp"
+                android:gravity="center_horizontal">
+
+            </TextView>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:paddingTop="20dp"
+            android:layout_gravity="center">
+
+            <TextView
+                android:id="@+id/filters"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/circle_background"
+                android:layout_gravity="center_vertical"
+                android:layout_marginHorizontal="9dp"
+                android:drawableTop="@drawable/ic_filter_icon"
+                android:paddingTop="25dp"
+                android:clickable="true">
+
+            </TextView>
+
+            <TextView
+                android:fontFamily="cursive"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/filters"
+                android:layout_centerHorizontal="true"
+                android:text="Add\n Filters"
+                android:textAlignment="center"
+                android:textColor="#FFFF"
+                android:textSize="18dp"
+                android:textStyle="bold"
+                android:layout_marginTop="10dp"
+                android:gravity="center_horizontal">
+
+            </TextView>
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:paddingTop="20dp"
+            android:layout_gravity="center">
+
+            <TextView
+                android:id="@+id/backgroundMusic"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/circle_background"
+                android:layout_gravity="center_vertical"
+                android:layout_marginHorizontal="9dp"
+                android:drawableTop="@drawable/ic_music_icon"
+                android:paddingTop="25dp"
+                android:clickable="true">
+            </TextView>
+
+            <TextView
+                android:fontFamily="cursive"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/backgroundMusic"
+                android:layout_centerHorizontal="true"
+                android:text="Add\n Music"
+                android:textAlignment="center"
+                android:textColor="#FFFF"
+                android:textSize="18dp"
+                android:textStyle="bold"
+                android:layout_marginTop="10dp"
+                android:gravity="center_horizontal">
+
+            </TextView>
+        </RelativeLayout>
+
+
+
+
+    </LinearLayout>
+
+
+</LinearLayout>

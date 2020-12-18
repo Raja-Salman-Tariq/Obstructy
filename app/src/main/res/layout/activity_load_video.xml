@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".LoadVideo"
+    android:background="@drawable/background"
+    android:padding="20dp">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/app_bar_logo"
+        android:translationY="-200dp">
+
+    </ImageView>
+
+    <LinearLayout
+        android:id="@+id/card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@drawable/fab"
+        android:orientation="vertical"
+        android:padding="25dp"
+        android:weightSum="2">
+
+        <TextView
+            android:id="@+id/selectVideo"
+            android:layout_width="match_parent"
+            android:layout_height="75dp"
+            android:layout_weight="1"
+            android:background="@drawable/card"
+            android:clickable="true"
+            android:text="Gallery"
+            android:textStyle="bold"
+            android:textColor="#0A1D41"
+            android:textSize="30dp"
+            android:fontFamily="cursive"
+            android:paddingTop="20dp"
+            android:gravity="center_horizontal">
+
+        </TextView>
+
+        <TextView
+            android:id="@+id/captureVideo"
+            android:layout_width="match_parent"
+            android:layout_height="75dp"
+            android:layout_weight="1"
+            android:background="@drawable/card"
+            android:clickable="true"
+            android:text="Camera"
+            android:textStyle="bold"
+            android:textColor="#0A1D41"
+            android:textSize="30dp"
+            android:fontFamily="cursive"
+            android:layout_marginTop="20dp"
+            android:paddingTop="20dp"
+            android:gravity="center_horizontal">
+
+        </TextView>
+
+
+    </LinearLayout>
+
+</RelativeLayout>
