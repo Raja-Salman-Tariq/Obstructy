@@ -89,12 +89,7 @@ public class EditVideo extends AppCompatActivity {
 
 
         selectedVideoPath=getIntent().getStringExtra("videoPath");
-        videoView=findViewById(R.id.videoView);
-        videoView.setVideoPath(selectedVideoPath);
-        MediaController mediaController=new MediaController(this);
-        mediaController.setAnchorView(videoView);
-        videoView.setMediaController(mediaController);
-        videoView.seekTo( 1 );
+        setVideoView();
 
         removeObstruction=findViewById(R.id.removeObstructionOption);
         extractFrame=findViewById(R.id.extractFrameOption);
@@ -110,13 +105,8 @@ public class EditVideo extends AppCompatActivity {
         addMusic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                try {
-                    selectAudioFile();
-                    getDest();
-                    addAudio();
-                } catch (FFmpegNotSupportedException | FFmpegCommandAlreadyRunningException e) {
-                    e.printStackTrace();
-                }
+                getDest();
+                selectAudioFile(); // adding musinc called in on activity result of select audio file fun
             }
         });
 
@@ -273,6 +263,15 @@ public class EditVideo extends AppCompatActivity {
                 saveVideo("");
             }
         });
+    }
+
+    private void setVideoView() {
+        videoView=findViewById(R.id.videoView);
+        videoView.setVideoPath(selectedVideoPath);
+        MediaController mediaController=new MediaController(this);
+        mediaController.setAnchorView(videoView);
+        videoView.setMediaController(mediaController);
+        videoView.seekTo( 1 );
     }
 
     private void printKeyHash() {
@@ -530,9 +529,10 @@ public class EditVideo extends AppCompatActivity {
             }
         });
 
+        String dt=(new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())).format(new Date());
         cmd = new String[] {"-i", selectedVideoPath, "-i", auFilePath,
                 "-c", "copy", "-map", "0:0", "-map", "1:0",
-                "-shortest", dest+"/xyz.mp4"};
+                "-shortest", dest+"/BGM"+dt+".mp4"};
         obj.execute(cmd, new ExecuteBinaryResponseHandler(){
             @Override
             public void onSuccess(String message) {
@@ -569,6 +569,8 @@ public class EditVideo extends AppCompatActivity {
 
         Log.d("myvid","HALUUUUUUU");
         Toast.makeText(EditVideo.this, "Done", Toast.LENGTH_SHORT).show();
+        selectedVideoPath=dest+"/BGM"+dt+".mp4";
+        setVideoView();
     }
 
     @Override
@@ -578,6 +580,11 @@ public class EditVideo extends AppCompatActivity {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 auFilePath= getPath(getApplicationContext() , data.getData() );
                 Log.d("add", "onActivityResult: "+auFilePath);
+                try {
+                    addAudio();
+                } catch (FFmpegNotSupportedException | FFmpegCommandAlreadyRunningException e) {
+                    e.printStackTrace();
+                }
             }
             else {
                 Log.d("add", "onActivityResult: Error, version issues...");
