@@ -263,6 +263,15 @@ public class EditVideo extends AppCompatActivity {
                 saveVideo("");
             }
         });
+
+        trimVideo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent=new Intent(EditVideo.this,TrimActivity.class);
+                intent.putExtra("uri",LoadVideo.uri+"");
+                startActivity(intent);
+            }
+        });
     }
 
     private void setVideoView() {

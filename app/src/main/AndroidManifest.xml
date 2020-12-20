@@ -35,11 +35,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".WaitingActivity" />
+        <activity android:name=".TrimActivity" />
+
         <provider
             android:authorities="com.facebook.app.FacebookContentProvider4071015906260441"
             android:name="com.facebook.FacebookContentProvider"
             android:exported="true"/>
-        
+
+        <service android:name=".MyProgressService" />
+
     </application>
 
 </manifest>

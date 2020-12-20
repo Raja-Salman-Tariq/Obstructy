@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".TrimActivity">
+
+    <VideoView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/vidview"/>
+
+    <ImageView
+        android:id="@+id/playpause"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:src="@drawable/ic_pause_foreground"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_90sdp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorPrimaryDark">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/st"
+            android:textSize="@dimen/_15sdp"
+            android:layout_marginLeft="@dimen/_10sdp"
+            android:text="00:00:00"
+            android:textColor="#FFFFFF"
+            android:layout_below="@+id/seek"/>
+
+        <TextView
+            android:layout_alignParentEnd="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/et"
+            android:textSize="@dimen/_15sdp"
+            android:layout_marginRight="@dimen/_10sdp"
+            android:text="00:00:00"
+            android:textColor="#FFFFFF"
+            android:gravity="end"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/seek"/>
+
+        <org.florescu.android.rangeseekbar.RangeSeekBar
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/_15sdp"
+            android:id="@+id/seek"
+            rsb_indicator_text_color="#ffffff"
+            rsb_progress_color="#000000"
+            rsb_progress_default_color="#FFFFFF"
+            rsb_tick_mark_text_color="#000000"
+            android:layout_centerInParent="true"/>
+
+        <Button
+            android:id="@+id/trimbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="Trim !"
+            android:textSize="@dimen/_15sdp"/>
+
+
+    </RelativeLayout>
+
+
+
+    </RelativeLayout>
