@@ -1,23 +1,35 @@
 package com.huzaifa.obstructy;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.ContentResolver;
-import android.content.ContentValues;
+import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
-import org.jetbrains.annotations.Nullable;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookSdk;
+import com.facebook.share.model.ShareVideo;
+import com.facebook.share.model.ShareVideoContent;
+import com.facebook.share.widget.ShareDialog;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -28,10 +40,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.sql.Time;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -46,13 +57,26 @@ import okhttp3.Response;
 
 public class EditVideo extends AppCompatActivity {
 
-    private TextView removeObstruction, backgroundMusic,filters,extractImage;
+    private ImageButton removeObstruction;
+    private ImageButton extractFrame;
+    private ImageButton addFilter;
+    private ImageButton addMusic;
+    private ImageButton trimVideo;
+    private ImageButton saveVideo;
+    private ImageButton shareVideo;
     String selectedVideoPath;
     VideoView videoView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FacebookSdk.sdkInitialize(this.getApplicationContext());
         setContentView(R.layout.activity_edit_video);
+
+        printKeyHash();
+        CallbackManager cbm=CallbackManager.Factory.create();
+        final ShareDialog shareDialog=new ShareDialog(this);
+
+
 
         selectedVideoPath=getIntent().getStringExtra("videoPath");
         videoView=findViewById(R.id.videoView);
@@ -60,11 +84,131 @@ public class EditVideo extends AppCompatActivity {
         MediaController mediaController=new MediaController(this);
         mediaController.setAnchorView(videoView);
         videoView.setMediaController(mediaController);
+        videoView.seekTo( 1 );
 
-        removeObstruction=findViewById(R.id.removeObstruction);
-        backgroundMusic=findViewById(R.id.backgroundMusic);
-        filters=findViewById(R.id.filters);
-        extractImage=findViewById(R.id.extractFrame);
+        removeObstruction=findViewById(R.id.removeObstructionOption);
+        extractFrame=findViewById(R.id.extractFrameOption);
+        addFilter=findViewById(R.id.addFilterOption);
+        addMusic=findViewById(R.id.addMusicOption);
+        trimVideo=findViewById(R.id.trimOption);
+        saveVideo=findViewById(R.id.saveOption);
+        shareVideo=findViewById(R.id.shareOption);
+
+        shareVideo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                final AlertDialog.Builder alert=new AlertDialog.Builder(EditVideo.this);
+                View mView=getLayoutInflater().inflate(R.layout.share_dialogue,null);
+
+
+                ImageView whatsapp_icon=mView.findViewById(R.id.whatsapp_icon);
+                ImageView twitter_icon=mView.findViewById(R.id.twitter_icon);
+                ImageView facebook_icon=mView.findViewById(R.id.facebook_icon);
+                ImageView instagram_icon=mView.findViewById(R.id.instagram_icon);
+
+                alert.setView(mView);
+
+                final AlertDialog alertDialog=alert.create();
+                alertDialog.setCanceledOnTouchOutside(false);
+
+                whatsapp_icon.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = getPackageManager().getLaunchIntentForPackage("com.whatsapp");
+                        if (intent != null)
+                        {
+                            Uri shareBody=Uri.parse(selectedVideoPath);
+                            Intent shareIntent = new Intent();
+                            shareIntent.setAction(Intent.ACTION_SEND);
+                            shareIntent.setPackage("com.whatsapp");
+                            shareIntent.putExtra(Intent.EXTRA_STREAM, shareBody);
+                            shareIntent.setType("video/mp4");
+                            startActivity(shareIntent);
+                        }
+                        else
+                        {
+                            intent = new Intent(Intent.ACTION_VIEW);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            intent.setData(Uri.parse("market://details?id="+"com.instagram.android"));
+                            startActivity(intent);
+                        }
+                        alertDialog.dismiss();
+                    }
+                });
+
+                twitter_icon.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = getPackageManager().getLaunchIntentForPackage("com.twitter.android");
+                        if (intent != null)
+                        {
+                            Uri shareBody=Uri.parse(selectedVideoPath);
+                            Intent shareIntent = new Intent();
+                            shareIntent.setAction(Intent.ACTION_SEND);
+                            shareIntent.setPackage("com.twitter.android");
+                            shareIntent.putExtra(Intent.EXTRA_STREAM, shareBody);
+                            shareIntent.setType("video/mp4");
+                            startActivity(shareIntent);
+                        }
+                        else
+                        {
+                            intent = new Intent(Intent.ACTION_VIEW);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            intent.setData(Uri.parse("market://details?id="+"com.instagram.android"));
+                            startActivity(intent);
+                        }
+                        alertDialog.dismiss();
+                    }
+                });
+
+                facebook_icon.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        //for facebook sharing//
+                        LoadVideo.videoFB=new ShareVideo.Builder()
+                                .setLocalUrl(LoadVideo.uri)
+                                .build();
+                        LoadVideo.videoContentFB=new ShareVideoContent.Builder()
+                                .setContentTitle("this is title")
+                                .setContentDescription("this is description")
+                                .setVideo(LoadVideo.videoFB)
+                                .build();
+                        if(shareDialog.canShow(ShareVideoContent.class))
+                            shareDialog.show(LoadVideo.videoContentFB);
+                        alertDialog.dismiss();
+                    }
+                });
+
+                instagram_icon.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = getPackageManager().getLaunchIntentForPackage("com.instagram.android");
+                        if (intent != null)
+                        {
+                            Uri shareBody=Uri.parse(selectedVideoPath);
+                            Intent shareIntent = new Intent();
+                            shareIntent.setAction(Intent.ACTION_SEND);
+                            shareIntent.setPackage("com.instagram.android");
+                            shareIntent.putExtra(Intent.EXTRA_STREAM, shareBody);
+                            shareIntent.setType("video/mp4");
+                            startActivity(shareIntent);
+                        }
+                        else
+                        {
+                            intent = new Intent(Intent.ACTION_VIEW);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            intent.setData(Uri.parse("market://details?id="+"com.instagram.android"));
+                            startActivity(intent);
+                        }
+                        alertDialog.dismiss();
+                    }
+                });
+
+                alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                alertDialog.show();
+            }
+        });
 
         removeObstruction.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,14 +241,33 @@ public class EditVideo extends AppCompatActivity {
             }
         });
 
-
-        extractImage.setOnClickListener(new View.OnClickListener() {
+        saveVideo.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 saveVideo("");
             }
-
         });
+    }
+
+    private void printKeyHash() {
+        try
+        {
+            PackageInfo info=getPackageManager().getPackageInfo("com.huzaifa.obstructy", PackageManager.GET_SIGNATURES);
+            for(Signature signature: info.signatures)
+            {
+                MessageDigest md=MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                Log.d("KeyHash", Base64.encodeToString(md.digest(),Base64.DEFAULT));
+            }
+        }
+        catch (PackageManager.NameNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+        catch (NoSuchAlgorithmException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     void postRequest(String postUrl, RequestBody postBody) {
@@ -252,7 +415,8 @@ public class EditVideo extends AppCompatActivity {
                 fos.write(buffer, 0, length);
             }
 
-            Log.d("myvid", "saveVideo: successfull");
+            Toast.makeText(this, "Saved Successfully!", Toast.LENGTH_SHORT).show();
+            Log.d("myvid", "saveVideo: successfull at"+dir.getAbsolutePath());
 
         } catch (MalformedURLException mue) {
             Log.e("SYNC getUpdate", "malformed url error", mue);

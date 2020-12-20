@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".EditVideo"
-    android:orientation="vertical"
-    android:weightSum="4"
     android:background="@drawable/background">
 
     <ImageView
+        android:id="@+id/logo_EditScreen"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:src="@drawable/app_bar_logo">
+        android:layout_height="wrap_content"
+        android:src="@drawable/app_bar_logo"
+        android:translationY="-170dp">
     </ImageView>
 
     <FrameLayout
+        android:id="@+id/videoPreview"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="2">
+        android:layout_height="300dp"
+        android:layout_centerInParent="true">
 
         <VideoView
             android:id="@+id/videoView"
@@ -28,173 +28,242 @@
             android:layout_height="match_parent"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:layout_gravity="center_horizontal">
+            android:layout_gravity="center">
 
         </VideoView>
-
     </FrameLayout>
 
-    <LinearLayout
+    <HorizontalScrollView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:background="@drawable/card2"
-        android:orientation="horizontal"
-        android:weightSum="4"
-        android:layout_marginTop="20dp">
+        android:paddingLeft="2dp"
+        android:paddingRight="2dp">
 
-        <RelativeLayout
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:paddingTop="20dp"
-            android:layout_gravity="center">
+            android:orientation="horizontal"
+            android:padding="3dp"
+            android:weightSum="7">
 
-            <TextView
-                android:id="@+id/removeObstruction"
-                android:layout_width="match_parent"
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:background="@drawable/circle_background"
-                android:layout_gravity="center_vertical"
-                android:layout_marginHorizontal="9dp"
-                android:drawableTop="@drawable/ic_obstruction_removal"
-                android:paddingTop="25dp"
-                android:clickable="true">
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:padding="3dp">
 
-            </TextView>
+                <ImageButton
+                    android:id="@+id/removeObstructionOption"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/circle_background"
+                    android:src="@drawable/ic_obstruction_removal"
+                    android:clickable="true"
+                    android:elevation="3dp">
 
-            <TextView
-                android:layout_width="wrap_content"
+                </ImageButton>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:layout_gravity="center"
+                    android:text="Remove Obstruction"
+                    android:textColor="#000"
+                    android:textSize="10dp">
+                </TextView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/removeObstruction"
-                android:layout_centerHorizontal="true"
-                android:text="Obstruction Removal "
-                android:textAlignment="center"
-                android:textColor="#FFFF"
-                android:textSize="18dp"
-                android:textStyle="bold"
-                android:layout_marginTop="10dp"
-                android:fontFamily="cursive"
-                android:gravity="center_horizontal">
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:padding="3dp">
 
-            </TextView>
+                <ImageButton
+                    android:id="@+id/extractFrameOption"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/circle_background"
+                    android:src="@drawable/ic_photo_extract"
+                    android:clickable="true"
+                    android:elevation="3dp">
 
-        </RelativeLayout>
+                </ImageButton>
 
-        <RelativeLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:paddingTop="20dp"
-            android:layout_gravity="center">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:layout_gravity="center"
+                    android:text="Extract Frame"
+                    android:textColor="#000"
+                    android:textSize="12dp">
+                </TextView>
 
-            <TextView
-                android:id="@+id/extractFrame"
-                android:layout_width="match_parent"
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:background="@drawable/circle_background"
-                android:layout_gravity="center_vertical"
-                android:layout_marginHorizontal="9dp"
-                android:drawableTop="@drawable/ic_photo_extract"
-                android:paddingTop="25dp"
-                android:clickable="true">
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:padding="3dp">
 
-            </TextView>
-            <TextView
-                android:fontFamily="cursive"
-                android:layout_width="wrap_content"
+                <ImageButton
+                    android:id="@+id/addFilterOption"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/circle_background"
+                    android:src="@drawable/ic_filters_icon"
+                    android:clickable="true"
+                    android:elevation="3dp">
+
+                </ImageButton>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:layout_gravity="center"
+                    android:text="Filters"
+                    android:textColor="#000"
+                    android:textSize="12dp">
+
+                </TextView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/extractFrame"
-                android:layout_centerHorizontal="true"
-                android:text="Extract\nFrame"
-                android:textAlignment="center"
-                android:textColor="#FFFF"
-                android:textSize="18dp"
-                android:textStyle="bold"
-                android:layout_marginTop="10dp"
-                android:gravity="center_horizontal">
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:padding="3dp">
 
-            </TextView>
-        </RelativeLayout>
+                <ImageButton
+                    android:id="@+id/addMusicOption"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/circle_background"
+                    android:src="@drawable/ic_music_icon"
+                    android:clickable="true"
+                    android:elevation="3dp">
 
-        <RelativeLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:paddingTop="20dp"
-            android:layout_gravity="center">
+                </ImageButton>
 
-            <TextView
-                android:id="@+id/filters"
-                android:layout_width="match_parent"
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:layout_gravity="center"
+                    android:text="Music"
+                    android:textColor="#000"
+                    android:textSize="12dp">
+                </TextView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:background="@drawable/circle_background"
-                android:layout_gravity="center_vertical"
-                android:layout_marginHorizontal="9dp"
-                android:drawableTop="@drawable/ic_filter_icon"
-                android:paddingTop="25dp"
-                android:clickable="true">
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:padding="3dp">
 
-            </TextView>
+                <ImageButton
+                    android:id="@+id/trimOption"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/circle_background"
+                    android:src="@drawable/ic_trim"
+                    android:clickable="true">
 
-            <TextView
-                android:fontFamily="cursive"
-                android:layout_width="wrap_content"
+                </ImageButton>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Trim"
+                    android:textAlignment="center"
+                    android:textColor="#000"
+                    android:textSize="12dp"></TextView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/filters"
-                android:layout_centerHorizontal="true"
-                android:text="Add\n Filters"
-                android:textAlignment="center"
-                android:textColor="#FFFF"
-                android:textSize="18dp"
-                android:textStyle="bold"
-                android:layout_marginTop="10dp"
-                android:gravity="center_horizontal">
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:padding="3dp">
 
-            </TextView>
-        </RelativeLayout>
+                <ImageButton
+                    android:id="@+id/saveOption"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/circle_background"
+                    android:src="@drawable/ic_save"
+                    android:clickable="true"
+                    android:elevation="3dp">
 
+                </ImageButton>
 
-        <RelativeLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:paddingTop="20dp"
-            android:layout_gravity="center">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:layout_gravity="center"
+                    android:text="Save"
+                    android:textColor="#000"
+                    android:textSize="12dp">
+                </TextView>
 
-            <TextView
-                android:id="@+id/backgroundMusic"
-                android:layout_width="match_parent"
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:background="@drawable/circle_background"
-                android:layout_gravity="center_vertical"
-                android:layout_marginHorizontal="9dp"
-                android:drawableTop="@drawable/ic_music_icon"
-                android:paddingTop="25dp"
-                android:clickable="true">
-            </TextView>
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:padding="3dp">
 
-            <TextView
-                android:fontFamily="cursive"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/backgroundMusic"
-                android:layout_centerHorizontal="true"
-                android:text="Add\n Music"
-                android:textAlignment="center"
-                android:textColor="#FFFF"
-                android:textSize="18dp"
-                android:textStyle="bold"
-                android:layout_marginTop="10dp"
-                android:gravity="center_horizontal">
+                <ImageButton
+                    android:id="@+id/shareOption"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/circle_background"
+                    android:src="@drawable/ic_share"
+                    android:clickable="true"
+                    android:elevation="3dp">
 
-            </TextView>
-        </RelativeLayout>
+                </ImageButton>
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:layout_gravity="center"
+                    android:text="Share"
+                    android:textColor="#000"
+                    android:textSize="12dp">
+                </TextView>
 
+            </LinearLayout>
 
-
-    </LinearLayout>
-
-
-</LinearLayout>
+        </LinearLayout>
+    </HorizontalScrollView>
+</RelativeLayout>

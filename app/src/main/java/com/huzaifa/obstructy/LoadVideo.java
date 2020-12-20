@@ -15,22 +15,31 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.share.model.ShareVideo;
+import com.facebook.share.model.ShareVideoContent;
+
 public class LoadVideo extends AppCompatActivity {
 
-    private TextView select, capture;
+    private ImageButton gallery;
+    private ImageButton camera;
+
+    public static Uri uri;
+    public static ShareVideo videoFB;
+    public static ShareVideoContent videoContentFB;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_load_video);
 
-        select=findViewById(R.id.selectVideo);
-        capture=findViewById(R.id.captureVideo);
+        gallery=findViewById(R.id.galleryOption);
+        camera=findViewById(R.id.cameraOption);
 
-        select.setOnClickListener(new View.OnClickListener()
+        gallery.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
@@ -42,7 +51,7 @@ public class LoadVideo extends AppCompatActivity {
 
         });
 
-        capture.setOnClickListener(new View.OnClickListener()
+        camera.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
@@ -60,7 +69,11 @@ public class LoadVideo extends AppCompatActivity {
     protected void onActivityResult(int reqCode, int resCode, Intent data) {
         super.onActivityResult(reqCode, resCode, data);
         if (resCode == RESULT_OK && data != null) {
-            Uri uri = data.getData();
+            uri = data.getData();
+
+
+
+
             String videoPath = getPath(getApplicationContext(), uri);
             Log.d("path", "onActivityResult: "+videoPath);
             Intent intent=new Intent(LoadVideo.this,EditVideo.class);

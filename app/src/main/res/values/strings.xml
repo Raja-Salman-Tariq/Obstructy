@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Obstructy</string>
+    <string name="facebook_app_id">4071015906260441</string>
+    <string name="facebook_login_protocol_scheme">fb4071015906260441</string>
 </resources>
