@@ -1,18 +1,18 @@
-"# Obstructy" 
+# Obstructy
 
-"## About"
+## About
 Obstructy is an academic project which aims to provide a mobile application for basic video processing/editing. Its key purpose is to make available the "Learning to See Through Obstructions" work by Yu-Lun Liu1, Wei-Sheng Lai, Ming-Hsuan Yang, Yung-Yu Chuang, and Jia-Bin Huang [https://alex04072000.github.io/ObstructionRemoval/].
 
 As tools and technologies, the project uses primarily Java, Android Studio (for the mobile app), TensorFlow, Python (for the model), and other tools/libraries for various features that augment the project.
 
-"## Requirements"
+## Requirements
 
 - Android Studio 
 - Java SDK [recent most LTS would suffice, but any SDK should also work]
 - Python 3
 - TensorFlow 1.10.0
 
-"## Usage"
+## Usage
 
 To utilise the features Obstructy has to offer, you will have to follow the following steps in the provided manner:
     • Download the zipped project folder from GitHub.
