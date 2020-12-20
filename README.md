@@ -15,7 +15,7 @@ As tools and technologies, the project uses primarily Java, Android Studio (for 
 ## Usage
 
 To utilise the features Obstructy has to offer, you will have to follow the following steps in the provided manner:
-- Download the zipped project folder from GitHub.
+ - Download the zipped project folder from GitHub.
   - Unzip the folder wherever conveniently accessible.
    - Open Android Studio.
     - Click on ‘File’ and select ‘Open’ from the drop-down menu.
