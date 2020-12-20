@@ -30,6 +30,11 @@ import com.facebook.FacebookSdk;
 import com.facebook.share.model.ShareVideo;
 import com.facebook.share.model.ShareVideoContent;
 import com.facebook.share.widget.ShareDialog;
+import com.github.hiteshsondhi88.libffmpeg.ExecuteBinaryResponseHandler;
+import com.github.hiteshsondhi88.libffmpeg.FFmpeg;
+import com.github.hiteshsondhi88.libffmpeg.LoadBinaryResponseHandler;
+import com.github.hiteshsondhi88.libffmpeg.exceptions.FFmpegCommandAlreadyRunningException;
+import com.github.hiteshsondhi88.libffmpeg.exceptions.FFmpegNotSupportedException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -55,6 +60,8 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import static com.huzaifa.obstructy.LoadVideo.getPath;
+
 public class EditVideo extends AppCompatActivity {
 
     private ImageButton removeObstruction;
@@ -66,6 +73,9 @@ public class EditVideo extends AppCompatActivity {
     private ImageButton shareVideo;
     String selectedVideoPath;
     VideoView videoView;
+
+    String auFilePath, dest;
+    String [] cmd;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,6 +103,22 @@ public class EditVideo extends AppCompatActivity {
         trimVideo=findViewById(R.id.trimOption);
         saveVideo=findViewById(R.id.saveOption);
         shareVideo=findViewById(R.id.shareOption);
+
+
+//        openVideo();
+
+        addMusic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    selectAudioFile();
+                    getDest();
+                    addAudio();
+                } catch (FFmpegNotSupportedException | FFmpegCommandAlreadyRunningException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
         shareVideo.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -424,6 +450,139 @@ public class EditVideo extends AppCompatActivity {
             Log.e("SYNC getUpdate", "io error", ioe);
         } catch (SecurityException se) {
             Log.e("SYNC getUpdate", "security error", se);
+        }
+    }
+
+    private void getDest() {
+        File dirUpr= new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES),"/Obstructy");
+
+//            File dir=new File(dest.getPath(),"/Obstructy");
+        if (! dirUpr.exists()){
+            if (! dirUpr.mkdirs()){
+                Log.d("myvid", "failed to create directory");
+                return;
+            }
+            else{
+                Log.d("myvid", "dir made at abs: "+dirUpr.getAbsolutePath()
+                        +", w path: "+dirUpr.getPath());
+//                        +", w can path: "+dir.getCanonicalPath());
+            }
+        }
+        else{
+            Log.d("myvid", "dir existed at abs: "+dirUpr.getAbsolutePath()
+                    +", w path: "+dirUpr.getPath());
+//                    +", w can path: "+dir.getCanonicalPath());
+        }
+
+        File dir=new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES)+"/Obstructy","/Cropped");
+
+        if (! dir.exists()){
+            if (! dir.mkdirs()){
+                Log.d("myvid", "failed to create directory");
+                return;
+            }
+            else{
+                Log.d("myvid", "dir made at abs: "+dir.getAbsolutePath()
+                        +", w path: "+dir.getPath());
+//                        +", w can path: "+dir.getCanonicalPath());
+            }
+        }
+        else{
+            Log.d("myvid", "dir existed at abs: "+dir.getAbsolutePath()
+                    +", w path: "+dir.getPath());
+//                    +", w can path: "+dir.getCanonicalPath());
+        }
+
+        dest=dir.getAbsolutePath();
+
+    }
+
+//    void openVideo(){
+//        Intent i=new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+//        i.setType("video/*");
+//        startActivityForResult(i, 100);
+//    }
+
+    private void selectAudioFile() {
+
+        Intent i=new Intent(Intent.ACTION_PICK, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
+        i.setType("audio/*");
+        i.setAction(Intent.ACTION_GET_CONTENT);
+
+        startActivityForResult(i, 3360);
+
+    }
+
+    private void addAudio() throws FFmpegNotSupportedException, FFmpegCommandAlreadyRunningException {
+        FFmpeg obj=FFmpeg.getInstance(EditVideo.this);
+        obj.loadBinary(new LoadBinaryResponseHandler(){
+
+            @Override
+            public void onFailure() {
+                super.onFailure();
+            }
+
+            @Override
+            public void onSuccess() {
+                super.onSuccess();
+            }
+        });
+
+        cmd = new String[] {"-i", selectedVideoPath, "-i", auFilePath,
+                "-c", "copy", "-map", "0:0", "-map", "1:0",
+                "-shortest", dest+"/xyz.mp4"};
+        obj.execute(cmd, new ExecuteBinaryResponseHandler(){
+            @Override
+            public void onSuccess(String message) {
+                super.onSuccess(message);
+            }
+
+            @Override
+            public void onProgress(String message) {
+                super.onProgress(message);
+            }
+
+            @Override
+            public void onFailure(String message) {
+                super.onFailure(message);
+//                pctg.setValue(100);
+
+                Log.d("myvid","HALUUUUUUU 4");
+            }
+
+            @Override
+            public void onStart() {
+                super.onStart();
+
+                Log.d("myvid","HALUUUUUUU 1");
+            }
+
+            @Override
+            public void onFinish() {
+                super.onFinish();
+
+                Log.d("myvid","HALUUUUUUU 2");
+            }
+        });
+
+        Log.d("myvid","HALUUUUUUU");
+        Toast.makeText(EditVideo.this, "Done", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode==RESULT_OK && requestCode==3360){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                auFilePath= getPath(getApplicationContext() , data.getData() );
+                Log.d("add", "onActivityResult: "+auFilePath);
+            }
+            else {
+                Log.d("add", "onActivityResult: Error, version issues...");
+                finish();
+            }
         }
     }
 }
