@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="15dp"
+    android:paddingRight="15dp"
+    android:paddingTop="5dp"
+    android:id="@+id/saveBottomSheet"
+    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+    app:behavior_hideable="true"
+    android:background="@drawable/card2">
+
+    <ImageButton
+        android:id="@+id/cross_icon_saveSheet"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:src="@drawable/ic_cross_icon"
+        android:background="#FFFF"
+        android:clickable="true"
+        android:focusable="true">
+    </ImageButton>
+
+    <ImageButton
+        android:id="@+id/done_icon_saveSheet"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/ic_done_icon"
+        android:background="#FFFF"
+        android:clickable="true"
+        android:focusable="true">
+    </ImageButton>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@+id/done_icon_saveSheet"
+        android:layout_marginTop="5dp"
+        android:layout_centerInParent="true"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16dp"
+            android:text="File Name:"
+            android:textColor="#000">
+
+        </TextView>
+
+        <EditText
+            android:id="@+id/saveFileName_saveSheet"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="3dp"
+            android:textColor="#000"
+            android:hint="New_File"
+            android:textSize="15dp"
+            android:inputType="text">
+        </EditText>
+
+    </LinearLayout>
+</RelativeLayout>

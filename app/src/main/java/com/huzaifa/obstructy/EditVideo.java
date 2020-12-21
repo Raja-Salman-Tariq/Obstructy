@@ -3,10 +3,13 @@ package com.huzaifa.obstructy;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
@@ -19,6 +22,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.IBinder;
 import android.provider.MediaStore;
 import android.text.InputType;
 import android.util.Base64;
@@ -36,6 +40,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.dinuscxj.progressbar.CircleProgressBar;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookSdk;
 import com.facebook.share.model.ShareVideo;
@@ -77,19 +82,41 @@ import okhttp3.Response;
 import static com.huzaifa.obstructy.LoadVideo.getPath;
 
 public class EditVideo extends AppCompatActivity {
-    TextView start, stop;
+    //<=================Progress=================>//
+    CircleProgressBar progress;
+    ServiceConnection myConn;
+    MyProgressService myServe;
+    //<------------------------------------------>//
+
+
+    //<=================TRIM SHEET VARIABLES=================>//
+    TextView startTrim, stopTrim;
     ImageButton trimDone;
     ImageButton trimClose;
-
     RangeSeekBar seek;
+    //<------------------------------------------>//
 
+
+    //<=================SAVE SHEET VARIABLES=================>//
+    ImageButton saveDone, saveClose;
+    EditText saveFileName;
+    //<------------------------------------------>//
+
+
+    //<=================SAVING VARIABLES=================>//
     int dur;
     String filePrefix;
     static File _dest;
+    //<------------------------------------------>//
 
-    RelativeLayout trimPopup, musicpopup;
-    BottomSheetBehavior bsheetTrim, bsheetMusic;
 
+    RelativeLayout trimPopup, musicpopup,savePopup;
+    BottomSheetBehavior bsheetTrim, bsheetMusic,bsheetSave;
+    String auFilePath, dest;
+    String [] cmd;
+
+
+    //<=================EDIT VIDEO LAYOUT VARIABLES=================>//
     private ImageButton removeObstruction;
     private ImageButton extractFrame;
     private ImageButton addFilter;
@@ -100,9 +127,8 @@ public class EditVideo extends AppCompatActivity {
     static String selectedVideoPath;
     VideoView videoView;
     MediaController mediaController;
+    //<------------------------------------------>//
 
-    String auFilePath, dest;
-    String [] cmd;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -116,6 +142,7 @@ public class EditVideo extends AppCompatActivity {
 
         selectedVideoPath=getIntent().getStringExtra("videoPath");
         setTrimViews();
+        setSaveViews();
         assignSheetViews();
         setVideoView();
         assignEditViews();
@@ -285,7 +312,8 @@ public class EditVideo extends AppCompatActivity {
         saveVideo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                saveVideo("");
+                bsheetSave.setState(BottomSheetBehavior.STATE_EXPANDED);
+                saveVideo();
             }
         });
 
@@ -298,14 +326,26 @@ public class EditVideo extends AppCompatActivity {
         });
     }
 
+    private void setSaveViews()
+    {
+        saveDone=findViewById(R.id.done_icon_saveSheet);
+        saveClose=findViewById(R.id.cross_icon_saveSheet);
+        saveFileName=findViewById(R.id.saveFileName_saveSheet);
+    }
+
     private void assignSheetViews()
     {
         trimPopup=findViewById(R.id.trim_bottom_sheet_dialogue);
         bsheetTrim= BottomSheetBehavior.from(trimPopup);
         bsheetTrim.setState(BottomSheetBehavior.STATE_HIDDEN);
+
         musicpopup=findViewById(R.id.musicpopup);
         bsheetMusic=BottomSheetBehavior.from(musicpopup);
         bsheetMusic.setState(BottomSheetBehavior.STATE_HIDDEN);
+
+        savePopup=findViewById(R.id.saveBottomSheet);
+        bsheetSave= BottomSheetBehavior.from(savePopup);
+        bsheetSave.setState(BottomSheetBehavior.STATE_HIDDEN);
     }
 
     private void assignEditViews()
@@ -321,60 +361,13 @@ public class EditVideo extends AppCompatActivity {
 
     private void setListeners()
     {
-
         trimDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                LinearLayout linlay=new LinearLayout(EditVideo.this);
-                linlay.setOrientation(LinearLayout.VERTICAL);
-                LinearLayout.LayoutParams myPams=new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
-                );
-
-                myPams.setMargins(50,0,50,100);
-
-                final EditText inp=new EditText(EditVideo.this);
-                inp.setLayoutParams(myPams);
-                inp.setGravity(Gravity.TOP| Gravity.START);
-                inp.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
-
-                linlay.addView(inp, myPams);
-
-
-                final AlertDialog.Builder prompt= new AlertDialog.Builder(EditVideo.this);
-                prompt.setMessage("Enter a name to save your cropped video.");
-                prompt.setTitle("Trim And Save Video");
-                prompt.setView(linlay);
-
-
-                prompt.setPositiveButton("Trim !", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        filePrefix=inp.getText().toString();
-
-                        trimVideo(seek.getSelectedMinValue().intValue()*1000,
-                                seek.getSelectedMaxValue().intValue()*1000,
-                                filePrefix);
-
-                            Intent in=new Intent(EditVideo.this, WaitingActivity.class);
-                        in.putExtra("dur", dur);
-                        Log.d("myvid", "onCreate dur val* in trimact: "+dur);
-                        in.putExtra("cmd", cmd);
-                        Log.d("pth", "onClick: "+cmd.toString().trim());
-//                        in.putExtra("dest", dest.getAbsolutePath());
-                        Log.d("pth", "onClick: "+_dest.getAbsolutePath());
-                        in.putExtra("dest", _dest.getAbsolutePath());
-                        dialogInterface.dismiss();
-                        startActivityForResult(in,1122);
-//                        setVideoView();
-//                        finish();
-                    }
-                });
-
-                prompt.show();
-
+                trimVideo(seek.getSelectedMinValue().intValue()*1000,seek.getSelectedMaxValue().intValue()*1000, "");
+                //INITIATE TRIMMING TASK//
+                bsheetTrim.setState(BottomSheetBehavior.STATE_HIDDEN);
+                initiateTask();
             }
         });
 
@@ -386,9 +379,64 @@ public class EditVideo extends AppCompatActivity {
         });
     }
 
+    private void initiateTask()
+    {
+        //<======================================SETTING PROGRESS CIRCLE AND CALLING SERVICE FOR TRIMMING===================================>//
+        progress=findViewById(R.id.prog_editVideo);
+        progress.setMax(100);
+
+        String path=_dest.getAbsolutePath();
+
+        final Intent myServiceInt=new Intent(EditVideo.this, MyProgressService.class);
+        myServiceInt.putExtra("dur",  dur);
+        myServiceInt.putExtra("cmd", cmd);
+        myServiceInt.putExtra("dest", path);
+        startService(myServiceInt);
+
+        myConn=new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+                MyProgressService.LocalBinder bi= (MyProgressService.LocalBinder)iBinder;
+                myServe=bi.getServiceInstance();
+                myServe.registerClient(getParent());
+
+                final Observer<Integer> resuObsv=new androidx.lifecycle.Observer<Integer>(){
+
+                    @Override
+                    public void onChanged(Integer integer) {
+                        int resu=integer;
+                        progress.setVisibility(View.VISIBLE);
+
+                        if (resu<100){
+                            progress.setProgress(resu);
+                        }
+
+                        if (resu>=100)
+                        {
+                            progress.setProgress(100);
+                            stopService(myServiceInt);
+
+                            Toast.makeText(getApplicationContext(), "Trim Successful !", Toast.LENGTH_SHORT).show();
+                            selectedVideoPath=_dest.getAbsolutePath();
+                            LoadVideo.uri= Uri.parse(EditVideo.selectedVideoPath);
+                            progress.setVisibility(View.INVISIBLE);
+                            setVideoView();
+                        }
+                    }
+                };
+                myServe.getPctg().observe(EditVideo.this, (androidx.lifecycle.Observer<? super Integer>) resuObsv);
+            }
+            @Override
+            public void onServiceDisconnected(ComponentName componentName)
+            {    }
+        };
+        bindService(myServiceInt, myConn, Context.BIND_AUTO_CREATE);
+        //<=================================================================================================================================>//
+    }
+
     private void setTrimViews() {
-        start=findViewById(R.id.startTV_trimSheet);
-        stop=findViewById(R.id.stopTV_trimSheet);
+        startTrim=findViewById(R.id.startTV_trimSheet);
+        stopTrim=findViewById(R.id.stopTV_trimSheet);
         seek=findViewById(R.id.seek_trimSheet);
         trimDone=findViewById(R.id.done_icon_trimSheet);
         trimClose=findViewById(R.id.cross_icon_trimSheet);
@@ -410,9 +458,9 @@ public class EditVideo extends AppCompatActivity {
             {
                 dur=videoView.getDuration()/1000;
                 Log.d("dur", "onPrepared: "+dur);
-                start.setText(getFormattedTime(0));
-                stop.setText(getFormattedTime(dur));
-                mediaPlayer.setLooping(true);
+                startTrim.setText(getFormattedTime(0));
+                stopTrim.setText(getFormattedTime(dur));
+                //mediaPlayer.setLooping(true);
                 seek.setRangeValues(0, dur);
                 seek.setSelectedMaxValue(dur);
                 seek.setSelectedMinValue(0);
@@ -421,8 +469,8 @@ public class EditVideo extends AppCompatActivity {
                     @Override
                     public void onRangeSeekBarValuesChanged(RangeSeekBar bar, Object minValue, Object maxValue) {
                         videoView.seekTo((int)minValue*1000);
-                        start.setText(getFormattedTime((int)bar.getSelectedMinValue()));
-                        stop.setText(getFormattedTime((int)bar.getSelectedMaxValue()));
+                        startTrim.setText(getFormattedTime((int)bar.getSelectedMinValue()));
+                        stopTrim.setText(getFormattedTime((int)bar.getSelectedMaxValue()));
                     }
                 });
 
@@ -543,77 +591,81 @@ public class EditVideo extends AppCompatActivity {
     }
 
 
-    void saveVideo(String url){
-        Log.d("myvid", "saveVideo: started");
-        // if url ! null/"", cuz a null url means local file...
-        try {
-            Log.d("myvid", "saveVideo: entered");
-            //uncomment and use the following if url not null/""... :
-//            URL u = new URL(url);
-//            InputStream is = u.openStream();
-            Uri u= getIntent().getData();
-            InputStream is = getContentResolver().openInputStream(u);
+    void saveVideo(){
+        saveDone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                bsheetSave.setState(BottomSheetBehavior.STATE_HIDDEN);
 
-            DataInputStream dis = new DataInputStream(is);
-
-            byte[] buffer = new byte[1024];
-            int length;
-
-            Uri dest;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                dest = MediaStore.Video.Media
-                        .getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
-            } else {
-                dest = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
-            }
-
-            Log.d("myvid", "saveVideo: ext stg st8:" + Environment.getExternalStorageState()
-                + ", loc path: " + Environment.getExternalStorageDirectory().getAbsolutePath());
-
-            Log.d("myvid", "saveVideo: dest path "+dest.getPath());
-
-            File dir= new File(Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_PICTURES),"/Obstructy");
-
-            if (! dir.exists()){
-                if (! dir.mkdirs()){
-                    Log.d("myvid", "failed to create directory");
-                    return;
+                String fileName=saveFileName.getText().toString();
+                if(fileName.equals(""))
+                {
+                    Toast.makeText(myServe, "Enter New File Name", Toast.LENGTH_SHORT).show();
                 }
-                else{
-                    Log.d("myvid", "dir made at abs: "+dir.getAbsolutePath()
-                            +", w path: "+dir.getPath()
-                            +", w can path: "+dir.getCanonicalPath());
+                else
+                {
+                    try {
+                        Uri u= getIntent().getData();
+                        InputStream is = getContentResolver().openInputStream(u);
+
+                        DataInputStream dis = new DataInputStream(is);
+
+                        byte[] buffer = new byte[1024];
+                        int length;
+
+                        Uri dest;
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+                        {
+                            dest = MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
+                        }
+                        else
+                        {
+                            dest = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+                        }
+
+                        File dir= new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),"/Obstructy");
+                        if (! dir.exists())
+                        {
+                            if (! dir.mkdirs())
+                            {
+                                return;
+                            }
+                            else
+                            {
+                                Log.d("myvid", "dir made at abs: "+dir.getAbsolutePath() +", w path: "+dir.getPath() +", w can path: "+dir.getCanonicalPath());
+                            }
+                        }
+                        else
+                        {
+                            Log.d("myvid", "dir existed at abs: "+dir.getAbsolutePath() +", w path: "+dir.getPath()+", w can path: "+dir.getCanonicalPath());
+                        }
+
+                        File mFile=new File(dir.getAbsolutePath()+File.separator+ fileName +".mp4");
+
+                        FileOutputStream fos = new FileOutputStream(mFile);
+
+                        while ((length = dis.read(buffer))>0) {
+                            fos.write(buffer, 0, length);
+                        }
+
+                        Toast.makeText(EditVideo.this, "Saved Successfully", Toast.LENGTH_SHORT).show();
+                    } catch (MalformedURLException mue) {
+                        Log.e("SYNC getUpdate", "malformed url error", mue);
+                    } catch (IOException ioe) {
+                        Log.e("SYNC getUpdate", "io error", ioe);
+                    } catch (SecurityException se) {
+                        Log.e("SYNC getUpdate", "security error", se);
+                    }
                 }
             }
-            else{
-                Log.d("myvid", "dir existed at abs: "+dir.getAbsolutePath()
-                        +", w path: "+dir.getPath()
-                        +", w can path: "+dir.getCanonicalPath());
+        });
+
+        saveClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
             }
-
-            String dt=(new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())).format(new Date());
-            Log.d("myvid", "vid time: "+ dt);
-
-            File mFile=new File(dir.getAbsolutePath()+File.separator+
-                    dt +".mp4");
-
-            FileOutputStream fos = new FileOutputStream(mFile);
-
-            while ((length = dis.read(buffer))>0) {
-                fos.write(buffer, 0, length);
-            }
-
-            Toast.makeText(this, "Saved Successfully!", Toast.LENGTH_SHORT).show();
-            Log.d("myvid", "saveVideo: successfull at"+dir.getAbsolutePath());
-
-        } catch (MalformedURLException mue) {
-            Log.e("SYNC getUpdate", "malformed url error", mue);
-        } catch (IOException ioe) {
-            Log.e("SYNC getUpdate", "io error", ioe);
-        } catch (SecurityException se) {
-            Log.e("SYNC getUpdate", "security error", se);
-        }
+        });
     }
 
     private void getDest() {
@@ -749,65 +801,57 @@ public class EditVideo extends AppCompatActivity {
                 finish();
             }
         }
-        else if (resultCode==RESULT_OK && requestCode==1122)
-        {
-            Log.d("_dest",_dest.getAbsolutePath());
-            EditVideo.selectedVideoPath=_dest.getAbsolutePath();
-            LoadVideo.uri= Uri.parse(EditVideo.selectedVideoPath);
-            setVideoView();
-        }
     }
 
 
     private void trimVideo(int start, int stop, String filePrefix) {
 
-        File dirUpr= new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES),"/Obstructy");
+        File dirUpr= new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),"/Obstructy");
 
-//            File dir=new File(dest.getPath(),"/Obstructy");
         if (! dirUpr.exists()){
-            if (! dirUpr.mkdirs()){
-                Log.d("myvid", "failed to create directory UPR");
+            if (! dirUpr.mkdirs())
+            {
                 return;
             }
-            else{
-                Log.d("myvid", "dir made at abs: "+dirUpr.getAbsolutePath()
-                        +", w path: "+dirUpr.getPath());
-//                        +", w can path: "+dir.getCanonicalPath());
+            else
+            {
+                Log.d("myvid", "dir made at abs: "+dirUpr.getAbsolutePath() +", w path: "+dirUpr.getPath());
             }
         }
-        else{
-            Log.d("myvid", "dir existed at abs: "+dirUpr.getAbsolutePath()
-                    +", w path: "+dirUpr.getPath());
-//                    +", w can path: "+dir.getCanonicalPath());
+        else
+        {
+            Log.d("myvid", "dir existed at abs: "+dirUpr.getAbsolutePath() +", w path: "+dirUpr.getPath());
         }
 
-        File dir=new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES)+"/Obstructy","/Cropped");
+        File dir=new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)+"/Obstructy","/Cropped");
 
-        if (! dir.exists()){
-            if (! dir.mkdirs()){
-                Log.d("myvid", "failed to create directory");
+        if (! dir.exists())
+        {
+            if (! dir.mkdirs())
+            {
                 return;
             }
-            else{
-                Log.d("myvid", "dir made at abs: "+dir.getAbsolutePath()
-                        +", w path: "+dir.getPath());
-//                        +", w can path: "+dir.getCanonicalPath());
+            else
+            {
+                Log.d("myvid", "dir made at abs: "+dir.getAbsolutePath()+", w path: "+dir.getPath());
             }
         }
-        else{
-            Log.d("myvid", "dir existed at abs: "+dir.getAbsolutePath()
-                    +", w path: "+dir.getPath());
-//                    +", w can path: "+dir.getCanonicalPath());
+        else
+        {
+            Log.d("myvid", "dir existed at abs: "+dir.getAbsolutePath() +", w path: "+dir.getPath());
         }
 
-        _dest=new File(dir.getAbsolutePath(),filePrefix+".mp4");
-        Log.d("myvid", "trimVideo dest state: "+_dest.exists()+_dest.getAbsolutePath());
-//        selectedVideoPath=getOrgPathFrmUri(getApplicationContext(), LoadVideo.uri);
+        String dt=(new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())).format(new Date());
+        if(filePrefix.equals(""))
+        {
+            _dest=new File(dir.getAbsolutePath(),dt+".mp4");
+        }
+        else
+        {
+            _dest=new File(dir.getAbsolutePath(),filePrefix+".mp4");
+        }
 
         dur=(stop-start)/1000;
-
         cmd=new String[]{"-ss", ""+start/1000, "-y", "-i", selectedVideoPath, "-t", ""+(stop-start)/1000,
                 "-vcodec", "mpeg4", "-b:v", "2097152", "-b:a", "48000", "-ac", "2", "-ar", "22050",
                 _dest.getAbsolutePath()};

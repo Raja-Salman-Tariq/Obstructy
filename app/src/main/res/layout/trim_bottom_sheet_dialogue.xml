@@ -19,7 +19,6 @@
         android:src="@drawable/ic_cross_icon"
         android:background="#FFFF"
         android:clickable="true"
-        android:layout_marginLeft="15dp"
         android:focusable="true">
     </ImageButton>
 
@@ -28,7 +27,6 @@
         android:layout_width="35dp"
         android:layout_height="35dp"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="15dp"
         android:src="@drawable/ic_done_icon"
         android:background="#FFFF"
         android:clickable="true"
@@ -75,34 +73,5 @@
         android:layout_below="@+id/done_icon_trimSheet">
 
     </TextView>
-
-<!--    <LinearLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_below="@+id/seek_trimSheet"-->
-<!--        android:layout_marginTop="5dp"-->
-<!--        android:orientation="horizontal"-->
-<!--        android:gravity="center">-->
-
-<!--        <TextView-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="File Name:"-->
-<!--            android:textColor="#000"-->
-<!--            android:textSize="17dp">-->
-<!--        </TextView>-->
-
-<!--        <EditText-->
-<!--            android:id="@+id/fileName_trimSheet"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:hint="New_File"-->
-<!--            android:textSize="15dp"-->
-<!--            android:textColorHint="#918989"-->
-<!--            android:layout_marginLeft="3dp">-->
-
-<!--        </EditText>-->
-
-<!--    </LinearLayout>-->
 
 </RelativeLayout>
