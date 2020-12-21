@@ -459,9 +459,9 @@ public class EditVideo extends AppCompatActivity {
         mediaController=new MediaController(this);
         mediaController.setAnchorView(videoView);
         videoView.setMediaController(mediaController);
+        dur=videoView.getDuration();
         videoView.seekTo( 1 );
         videoView.start();
-        dur=videoView.getDuration()/1000;
         Log.d("dur", "setVideoView: "+dur);
     }
 
