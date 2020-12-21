@@ -4,23 +4,34 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
+import android.text.InputType;
 import android.util.Base64;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.MediaController;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -35,6 +46,9 @@ import com.github.hiteshsondhi88.libffmpeg.FFmpeg;
 import com.github.hiteshsondhi88.libffmpeg.LoadBinaryResponseHandler;
 import com.github.hiteshsondhi88.libffmpeg.exceptions.FFmpegCommandAlreadyRunningException;
 import com.github.hiteshsondhi88.libffmpeg.exceptions.FFmpegNotSupportedException;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+
+import org.florescu.android.rangeseekbar.RangeSeekBar;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -63,6 +77,24 @@ import okhttp3.Response;
 import static com.huzaifa.obstructy.LoadVideo.getPath;
 
 public class EditVideo extends AppCompatActivity {
+    //************************** trim items
+//    Uri uri;
+//    ImageView playpause;
+//    VideoView vidview;
+    TextView start, stop;
+    ImageButton btn;
+
+    RangeSeekBar seek;
+
+//    boolean isPlaying;
+    int dur;
+    String filePrefix;
+//    String[] cmd;
+    File _dest;
+//    String originalPath;
+    //******************************* trim items **********************
+    RelativeLayout trimPopup, musicpopup;
+    BottomSheetBehavior bsheetTrim, bsheetMusic;
 
     private ImageButton removeObstruction;
     private ImageButton extractFrame;
@@ -73,6 +105,7 @@ public class EditVideo extends AppCompatActivity {
     private ImageButton shareVideo;
     String selectedVideoPath;
     VideoView videoView;
+    MediaController mediaController;
 
     String auFilePath, dest;
     String [] cmd;
@@ -100,6 +133,16 @@ public class EditVideo extends AppCompatActivity {
         shareVideo=findViewById(R.id.shareOption);
 
 
+        trimPopup=findViewById(R.id.trim_bottom_sheet_dialogue);
+        bsheetTrim= BottomSheetBehavior.from(trimPopup);
+        bsheetTrim.setState(BottomSheetBehavior.STATE_HIDDEN);
+        musicpopup=findViewById(R.id.musicpopup);
+        bsheetMusic=BottomSheetBehavior.from(musicpopup);
+        bsheetMusic.setState(BottomSheetBehavior.STATE_HIDDEN);
+
+
+
+
 //        openVideo();
 
         addMusic.setOnClickListener(new View.OnClickListener() {
@@ -107,6 +150,13 @@ public class EditVideo extends AppCompatActivity {
             public void onClick(View view) {
                 getDest();
                 selectAudioFile(); // adding musinc called in on activity result of select audio file fun
+            }
+        });
+
+        addFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bsheetMusic.setState(BottomSheetBehavior.STATE_EXPANDED);
             }
         });
 
@@ -267,20 +317,152 @@ public class EditVideo extends AppCompatActivity {
         trimVideo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent=new Intent(EditVideo.this,TrimActivity.class);
-                intent.putExtra("uri",LoadVideo.uri+"");
-                startActivity(intent);
+                bsheetTrim.setState(BottomSheetBehavior.STATE_EXPANDED);
+
+                setTrimViews();
+                setListeners();
+
+//                Intent intent=new Intent(EditVideo.this,TrimActivity.class);
+//                intent.putExtra("uri",LoadVideo.uri+"");
+//                startActivity(intent);
             }
         });
+    }
+
+    private void setListeners()
+    {
+
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                LinearLayout linlay=new LinearLayout(EditVideo.this);
+                linlay.setOrientation(LinearLayout.VERTICAL);
+                LinearLayout.LayoutParams myPams=new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
+
+                myPams.setMargins(50,0,50,100);
+
+                final EditText inp=new EditText(EditVideo.this);
+                inp.setLayoutParams(myPams);
+                inp.setGravity(Gravity.TOP| Gravity.START);
+                inp.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+
+                linlay.addView(inp, myPams);
+
+
+                final AlertDialog.Builder prompt= new AlertDialog.Builder(EditVideo.this);
+                prompt.setMessage("Enter a name to save your cropped video.");
+                prompt.setTitle("Trim And Save Video");
+                prompt.setView(linlay);
+
+
+                prompt.setPositiveButton("Trim !", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        filePrefix=inp.getText().toString();
+
+                        trimVideo(seek.getSelectedMinValue().intValue()*1000,
+                                seek.getSelectedMaxValue().intValue()*1000,
+                                filePrefix);
+
+                        Intent in=new Intent(EditVideo.this, WaitingActivity.class);
+                        in.putExtra("dur", dur);
+                        Log.d("myvid", "onCreate dur val* in trimact: "+dur);
+                        in.putExtra("cmd", cmd);
+                        Log.d("pth", "onClick: "+cmd.toString().trim());
+//                        in.putExtra("dest", dest.getAbsolutePath());
+                        Log.d("pth", "onClick: "+_dest.getAbsolutePath());
+                        in.putExtra("dest", _dest.getAbsolutePath());
+                        startActivity(in);
+
+
+                        finish();
+                        dialogInterface.dismiss();
+
+                    }
+                });
+
+                prompt.show();
+
+            }
+        });
+
+//        playpause.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if (isPlaying)
+//                {
+//                    playpause.setImageResource(R.drawable.ic_pause_foreground);
+////                    vidview.pause();
+//                    isPlaying=false;
+//                }
+//                else
+//                {
+//                    vidview.start();
+//                    playpause.setImageResource(R.drawable.ic_play_foreground);
+//                    isPlaying=true;
+//                }
+//            }
+//        });
+
+
+        videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mediaPlayer) {
+//                dur=mediaPlayer.getDuration()/1000;
+                Log.d("dur", "onPrepared: "+dur);
+                start.setText(getFormattedTime(dur));
+                mediaPlayer.setLooping(true);
+                seek.setRangeValues(0, dur);
+                seek.setSelectedMaxValue(dur);
+                seek.setSelectedMinValue(0);
+                seek.setEnabled(true);
+                seek.setOnRangeSeekBarChangeListener(new RangeSeekBar.OnRangeSeekBarChangeListener() {
+                    @Override
+                    public void onRangeSeekBarValuesChanged(RangeSeekBar bar, Object minValue, Object maxValue) {
+                        videoView.seekTo((int)minValue*1000);
+                        start.setText(getFormattedTime((int)bar.getSelectedMinValue()));
+                        stop.setText(getFormattedTime((int)bar.getSelectedMaxValue()));
+                    }
+                });
+
+                Handler handler=new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (videoView.getCurrentPosition()>=seek.getSelectedMaxValue().intValue()*1000)
+                        {
+                            videoView.seekTo(seek.getSelectedMinValue().intValue()*1000);
+                        }
+                    }
+                },1000);
+            }
+        });
+    }
+
+    private void setTrimViews() {
+//        isPlaying=false;
+//        playpause=fin dViewById(R.id.playpause);
+//        vidview=findViewById(R.id.vidview);
+        start=findViewById(R.id.startTV_trimSheet);
+        stop=findViewById(R.id.stopTV_trimSheet);
+        seek=findViewById(R.id.seek_trimSheet);
+        btn=findViewById(R.id.done_icon_trimSheet);
     }
 
     private void setVideoView() {
         videoView=findViewById(R.id.videoView);
         videoView.setVideoPath(selectedVideoPath);
-        MediaController mediaController=new MediaController(this);
+        mediaController=new MediaController(this);
         mediaController.setAnchorView(videoView);
         videoView.setMediaController(mediaController);
         videoView.seekTo( 1 );
+        videoView.start();
+        dur=videoView.getDuration()/1000;
+        Log.d("dur", "setVideoView: "+dur);
     }
 
     private void printKeyHash() {
@@ -601,4 +783,97 @@ public class EditVideo extends AppCompatActivity {
             }
         }
     }
+
+
+    private void trimVideo(int start, int stop, String filePrefix) {
+
+        File dirUpr= new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES),"/Obstructy");
+
+//            File dir=new File(dest.getPath(),"/Obstructy");
+        if (! dirUpr.exists()){
+            if (! dirUpr.mkdirs()){
+                Log.d("myvid", "failed to create directory UPR");
+                return;
+            }
+            else{
+                Log.d("myvid", "dir made at abs: "+dirUpr.getAbsolutePath()
+                        +", w path: "+dirUpr.getPath());
+//                        +", w can path: "+dir.getCanonicalPath());
+            }
+        }
+        else{
+            Log.d("myvid", "dir existed at abs: "+dirUpr.getAbsolutePath()
+                    +", w path: "+dirUpr.getPath());
+//                    +", w can path: "+dir.getCanonicalPath());
+        }
+
+        File dir=new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES)+"/Obstructy","/Cropped");
+
+        if (! dir.exists()){
+            if (! dir.mkdirs()){
+                Log.d("myvid", "failed to create directory");
+                return;
+            }
+            else{
+                Log.d("myvid", "dir made at abs: "+dir.getAbsolutePath()
+                        +", w path: "+dir.getPath());
+//                        +", w can path: "+dir.getCanonicalPath());
+            }
+        }
+        else{
+            Log.d("myvid", "dir existed at abs: "+dir.getAbsolutePath()
+                    +", w path: "+dir.getPath());
+//                    +", w can path: "+dir.getCanonicalPath());
+        }
+
+        _dest=new File(dir.getAbsolutePath(),filePrefix+".mp4");
+        Log.d("myvid", "trimVideo dest state: "+_dest.exists()+_dest.getAbsolutePath());
+//        selectedVideoPath=getOrgPathFrmUri(getApplicationContext(), LoadVideo.uri);
+
+        dur=(stop-start)/1000;
+
+        cmd=new String[]{"-ss", ""+start/1000, "-y", "-i", selectedVideoPath, "-t", ""+(stop-start)/1000,
+                "-vcodec", "mpeg4", "-b:v", "2097152", "-b:a", "48000", "-ac", "2", "-ar", "22050",
+                _dest.getAbsolutePath()};
+    }
+
+    private String getOrgPathFrmUri(Context ctx, Uri uri)
+    {
+        Cursor c=null;
+
+        try {
+            String[] project = {MediaStore.Images.Media.DATA};
+
+            c = ctx.getContentResolver().query(uri, project, null, null, null);
+            int colIdx = c.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            c.moveToFirst();
+
+            return c.getString(colIdx);
+        } catch (Exception e){
+            e.printStackTrace();
+            return "";
+        } finally {
+            if (c!=null)
+                c.close();
+        }
+
+    }
+
+
+    private String getFormattedTime(int dur)
+    {
+        int h=dur/3600,
+                rem=dur%3600,
+                min=rem/60,
+                sec=rem%60;
+
+        return String.format("%02d:", h)+
+                String.format("%02d:", min)+
+                String.format("%02d:", sec);
+
+
+    }
+
 }

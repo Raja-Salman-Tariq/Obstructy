@@ -9,10 +9,10 @@
     <VideoView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/vidview"/>
+        android:id="@+id/vidviewAct"/>
 
     <ImageView
-        android:id="@+id/playpause"
+        android:id="@+id/playpauseAct"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
@@ -27,31 +27,31 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/st"
+            android:id="@+id/stAct"
             android:textSize="@dimen/_15sdp"
             android:layout_marginLeft="@dimen/_10sdp"
             android:text="00:00:00"
             android:textColor="#FFFFFF"
-            android:layout_below="@+id/seek"/>
+            android:layout_below="@+id/seekAct"/>
 
         <TextView
             android:layout_alignParentEnd="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/et"
+            android:id="@+id/etAct"
             android:textSize="@dimen/_15sdp"
             android:layout_marginRight="@dimen/_10sdp"
             android:text="00:00:00"
             android:textColor="#FFFFFF"
             android:gravity="end"
             android:layout_alignParentRight="true"
-            android:layout_below="@+id/seek"/>
+            android:layout_below="@+id/seekAct"/>
 
         <org.florescu.android.rangeseekbar.RangeSeekBar
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="@dimen/_15sdp"
-            android:id="@+id/seek"
+            android:id="@+id/seekAct"
             rsb_indicator_text_color="#ffffff"
             rsb_progress_color="#000000"
             rsb_progress_default_color="#FFFFFF"
@@ -59,7 +59,7 @@
             android:layout_centerInParent="true"/>
 
         <Button
-            android:id="@+id/trimbtn"
+            android:id="@+id/trimbtnAct"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"

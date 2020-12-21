@@ -52,8 +52,8 @@ public class TrimActivity extends AppCompatActivity {
         setContentView(R.layout.activity_trim);
 
         isPlaying=false;
-        playpause=findViewById(R.id.playpause);
-        vidview=findViewById(R.id.vidview);
+        playpause=findViewById(R.id.playpauseAct);
+        vidview=findViewById(R.id.vidviewAct);
         start=findViewById(R.id.st);
         stop=findViewById(R.id.et);
         seek=findViewById(R.id.seek);

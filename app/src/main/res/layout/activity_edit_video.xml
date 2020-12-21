@@ -33,7 +33,19 @@
         </VideoView>
     </FrameLayout>
 
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_above="@+id/horror"
+        android:layout_below="@+id/videoPreview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <include layout="@layout/trim_bottom_sheet_dialogue"/>
+        <include layout="@layout/musicpopup"/>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
     <HorizontalScrollView
+        android:id="@+id/horror"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -74,7 +86,7 @@
                     android:layout_gravity="center"
                     android:text="Remove Obstruction"
                     android:textColor="#000"
-                    android:textSize="10dp">
+                    android:textSize="9dp">
                 </TextView>
 
             </LinearLayout>
