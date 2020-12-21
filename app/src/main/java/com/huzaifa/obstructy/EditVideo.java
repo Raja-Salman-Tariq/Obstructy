@@ -5,6 +5,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -16,6 +17,7 @@ import android.content.pm.Signature;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
@@ -36,6 +38,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.MediaController;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -69,6 +72,7 @@ import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.StringTokenizer;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -82,6 +86,10 @@ import okhttp3.Response;
 import static com.huzaifa.obstructy.LoadVideo.getPath;
 
 public class EditVideo extends AppCompatActivity {
+    MediaPlayer soundCtrlr;
+    MediaController soundMediaCtrl;
+
+    TextView start, stop;
     //<=================Progress=================>//
     CircleProgressBar progress;
     ServiceConnection myConn;
@@ -135,6 +143,8 @@ public class EditVideo extends AppCompatActivity {
         FacebookSdk.sdkInitialize(this.getApplicationContext());    //FOR FACEBOOK SHARING
         setContentView(R.layout.activity_edit_video);
 
+        filePrefix="";
+
         //<==================FOR FACEBOOK SHARING=================>//
         printKeyHash();
         CallbackManager cbm=CallbackManager.Factory.create();
@@ -150,8 +160,11 @@ public class EditVideo extends AppCompatActivity {
         addMusic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                bsheetMusic.setState(BottomSheetBehavior.STATE_EXPANDED);
+                setListeners();
                 getDest();
-                selectAudioFile(); // adding musinc called in on activity result of select audio file fun
+//                selectAudioFile(); // adding musinc called in on activity result of select audio file fun
             }
         });
 
@@ -324,6 +337,68 @@ public class EditVideo extends AppCompatActivity {
                 setListeners();
             }
         });
+
+        soundCtrlr=new MediaPlayer();
+        soundMediaCtrl=null;
+        soundCtrlr.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                Log.d("sound", "onPrepared: "+soundCtrlr.getDuration());
+                soundCtrlr.start();
+            }
+        });
+
+        findViewById(R.id.cross_icon_musicSheet).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bsheetMusic.setState(BottomSheetBehavior.STATE_HIDDEN);
+            }
+        });
+
+        findViewById(R.id.done_icon_musicSheet).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    addAudio();
+                } catch (FFmpegNotSupportedException | FFmpegCommandAlreadyRunningException e) {
+                    e.printStackTrace();
+                }
+
+//                startActivity(new Intent(EditVideo.this, WaitingActivity.class));
+            }
+        });
+
+        findViewById(R.id.musicChange).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectAudioFile();
+            }
+        });
+
+        findViewById(R.id.musicPlayPause).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(EditVideo.this,
+                        "Working...",
+                        Toast.LENGTH_SHORT).show();
+                if (soundCtrlr!=null){
+//                    soundCtrlr.setDataSource(EditVideo.this, auFilePath);
+                    if (soundCtrlr.isPlaying()) {
+                        soundCtrlr.pause();
+                        findViewById(R.id.musicPlayPause).setBackgroundResource(R.drawable.ic_music_play);
+                    }
+                    else {
+                        soundCtrlr.start();
+                        findViewById(R.id.musicPlayPause).setBackgroundResource(R.drawable.ic_music_pause);
+                    }
+                }
+                else{
+                    Toast.makeText(EditVideo.this,
+                            "Please select an audio file first",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     private void setSaveViews()
@@ -385,6 +460,8 @@ public class EditVideo extends AppCompatActivity {
         progress=findViewById(R.id.prog_editVideo);
         progress.setMax(100);
 
+        if (_dest==null)
+            manageDestNDirs();
         String path=_dest.getAbsolutePath();
 
         final Intent myServiceInt=new Intent(EditVideo.this, MyProgressService.class);
@@ -416,7 +493,7 @@ public class EditVideo extends AppCompatActivity {
                             progress.setProgress(100);
                             stopService(myServiceInt);
 
-                            Toast.makeText(getApplicationContext(), "Trim Successful !", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "Task Successful !", Toast.LENGTH_SHORT).show();
                             selectedVideoPath=_dest.getAbsolutePath();
                             LoadVideo.uri= Uri.parse(EditVideo.selectedVideoPath);
                             progress.setVisibility(View.INVISIBLE);
@@ -725,61 +802,19 @@ public class EditVideo extends AppCompatActivity {
     }
 
     private void addAudio() throws FFmpegNotSupportedException, FFmpegCommandAlreadyRunningException {
-        FFmpeg obj=FFmpeg.getInstance(EditVideo.this);
-        obj.loadBinary(new LoadBinaryResponseHandler(){
-
-            @Override
-            public void onFailure() {
-                super.onFailure();
-            }
-
-            @Override
-            public void onSuccess() {
-                super.onSuccess();
-            }
-        });
 
         String dt=(new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())).format(new Date());
         cmd = new String[] {"-i", selectedVideoPath, "-i", auFilePath,
                 "-c", "copy", "-map", "0:0", "-map", "1:0",
                 "-shortest", dest+"/BGM"+dt+".mp4"};
-        obj.execute(cmd, new ExecuteBinaryResponseHandler(){
-            @Override
-            public void onSuccess(String message) {
-                super.onSuccess(message);
-            }
 
-            @Override
-            public void onProgress(String message) {
-                super.onProgress(message);
-            }
+        bsheetMusic.setState(BottomSheetBehavior.STATE_HIDDEN);
 
-            @Override
-            public void onFailure(String message) {
-                super.onFailure(message);
-//                pctg.setValue(100);
+        initiateTask();
 
-                Log.d("myvid","HALUUUUUUU 4");
-            }
-
-            @Override
-            public void onStart() {
-                super.onStart();
-
-                Log.d("myvid","HALUUUUUUU 1");
-            }
-
-            @Override
-            public void onFinish() {
-                super.onFinish();
-
-                Log.d("myvid","HALUUUUUUU 2");
-            }
-        });
-
-        Log.d("myvid","HALUUUUUUU");
+//        Log.d("myvid","HALUUUUUUU");
         Toast.makeText(EditVideo.this, "Done", Toast.LENGTH_SHORT).show();
-        selectedVideoPath=dest+"/BGM"+dt+".mp4";
+//        selectedVideoPath=_dest.getAbsolutePath();
         setVideoView();
     }
 
@@ -788,11 +823,23 @@ public class EditVideo extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode==RESULT_OK && requestCode==3360){
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                auFilePath= getPath(getApplicationContext() , data.getData() );
-                Log.d("add", "onActivityResult: "+auFilePath);
+                Uri uri=data.getData();
+                auFilePath= getPath(getApplicationContext() ,uri );
+
+                String tmp="";
+                StringTokenizer stok=new StringTokenizer(auFilePath, "/");
+
+                while (stok.hasMoreTokens())
+                    tmp=stok.nextToken();
+                Log.d("stok", "onActivityResult: "+tmp);
+                TextView tv=findViewById(R.id.musicFile);
+                tv.setText(tmp);
+
                 try {
-                    addAudio();
-                } catch (FFmpegNotSupportedException | FFmpegCommandAlreadyRunningException e) {
+                    soundCtrlr.reset();
+                    soundCtrlr.setDataSource(EditVideo.this, uri);
+                    soundCtrlr.prepare();
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
@@ -806,6 +853,16 @@ public class EditVideo extends AppCompatActivity {
 
     private void trimVideo(int start, int stop, String filePrefix) {
 
+        manageDestNDirs();
+
+        dur=(stop-start)/1000;
+
+        cmd=new String[]{"-ss", ""+start/1000, "-y", "-i", selectedVideoPath, "-t", ""+(stop-start)/1000,
+                "-vcodec", "mpeg4", "-b:v", "2097152", "-b:a", "48000", "-ac", "2", "-ar", "22050",
+                _dest.getAbsolutePath()};
+    }
+
+    private void manageDestNDirs() {
         File dirUpr= new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),"/Obstructy");
 
         if (! dirUpr.exists()){
@@ -850,11 +907,6 @@ public class EditVideo extends AppCompatActivity {
         {
             _dest=new File(dir.getAbsolutePath(),filePrefix+".mp4");
         }
-
-        dur=(stop-start)/1000;
-        cmd=new String[]{"-ss", ""+start/1000, "-y", "-i", selectedVideoPath, "-t", ""+(stop-start)/1000,
-                "-vcodec", "mpeg4", "-b:v", "2097152", "-b:a", "48000", "-ac", "2", "-ar", "22050",
-                _dest.getAbsolutePath()};
     }
 
     private String getOrgPathFrmUri(Context ctx, Uri uri)
