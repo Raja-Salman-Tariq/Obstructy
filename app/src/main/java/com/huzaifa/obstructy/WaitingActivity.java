@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -77,7 +78,8 @@ public class WaitingActivity extends AppCompatActivity {
                                 Toast.makeText(getApplicationContext(), "Cropping Successful !",
                                         Toast.LENGTH_SHORT).show();
 
-                                startActivity(new Intent(WaitingActivity.this, MainActivity.class));
+//                                startActivity(new Intent(WaitingActivity.this, EditVideo.class));
+                                setResult(RESULT_OK);
                                 finish();
                             }
                         }

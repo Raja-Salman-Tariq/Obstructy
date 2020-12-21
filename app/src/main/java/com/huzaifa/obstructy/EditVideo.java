@@ -77,22 +77,16 @@ import okhttp3.Response;
 import static com.huzaifa.obstructy.LoadVideo.getPath;
 
 public class EditVideo extends AppCompatActivity {
-    //************************** trim items
-//    Uri uri;
-//    ImageView playpause;
-//    VideoView vidview;
     TextView start, stop;
-    ImageButton btn;
+    ImageButton trimDone;
+    ImageButton trimClose;
 
     RangeSeekBar seek;
 
-//    boolean isPlaying;
     int dur;
     String filePrefix;
-//    String[] cmd;
-    File _dest;
-//    String originalPath;
-    //******************************* trim items **********************
+    static File _dest;
+
     RelativeLayout trimPopup, musicpopup;
     BottomSheetBehavior bsheetTrim, bsheetMusic;
 
@@ -103,7 +97,7 @@ public class EditVideo extends AppCompatActivity {
     private ImageButton trimVideo;
     private ImageButton saveVideo;
     private ImageButton shareVideo;
-    String selectedVideoPath;
+    static String selectedVideoPath;
     VideoView videoView;
     MediaController mediaController;
 
@@ -112,38 +106,19 @@ public class EditVideo extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FacebookSdk.sdkInitialize(this.getApplicationContext());
+        FacebookSdk.sdkInitialize(this.getApplicationContext());    //FOR FACEBOOK SHARING
         setContentView(R.layout.activity_edit_video);
 
+        //<==================FOR FACEBOOK SHARING=================>//
         printKeyHash();
         CallbackManager cbm=CallbackManager.Factory.create();
         final ShareDialog shareDialog=new ShareDialog(this);
 
-
-
         selectedVideoPath=getIntent().getStringExtra("videoPath");
+        setTrimViews();
+        assignSheetViews();
         setVideoView();
-
-        removeObstruction=findViewById(R.id.removeObstructionOption);
-        extractFrame=findViewById(R.id.extractFrameOption);
-        addFilter=findViewById(R.id.addFilterOption);
-        addMusic=findViewById(R.id.addMusicOption);
-        trimVideo=findViewById(R.id.trimOption);
-        saveVideo=findViewById(R.id.saveOption);
-        shareVideo=findViewById(R.id.shareOption);
-
-
-        trimPopup=findViewById(R.id.trim_bottom_sheet_dialogue);
-        bsheetTrim= BottomSheetBehavior.from(trimPopup);
-        bsheetTrim.setState(BottomSheetBehavior.STATE_HIDDEN);
-        musicpopup=findViewById(R.id.musicpopup);
-        bsheetMusic=BottomSheetBehavior.from(musicpopup);
-        bsheetMusic.setState(BottomSheetBehavior.STATE_HIDDEN);
-
-
-
-
-//        openVideo();
+        assignEditViews();
 
         addMusic.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -318,21 +293,36 @@ public class EditVideo extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 bsheetTrim.setState(BottomSheetBehavior.STATE_EXPANDED);
-
-                setTrimViews();
                 setListeners();
-
-//                Intent intent=new Intent(EditVideo.this,TrimActivity.class);
-//                intent.putExtra("uri",LoadVideo.uri+"");
-//                startActivity(intent);
             }
         });
+    }
+
+    private void assignSheetViews()
+    {
+        trimPopup=findViewById(R.id.trim_bottom_sheet_dialogue);
+        bsheetTrim= BottomSheetBehavior.from(trimPopup);
+        bsheetTrim.setState(BottomSheetBehavior.STATE_HIDDEN);
+        musicpopup=findViewById(R.id.musicpopup);
+        bsheetMusic=BottomSheetBehavior.from(musicpopup);
+        bsheetMusic.setState(BottomSheetBehavior.STATE_HIDDEN);
+    }
+
+    private void assignEditViews()
+    {
+        removeObstruction=findViewById(R.id.removeObstructionOption);
+        extractFrame=findViewById(R.id.extractFrameOption);
+        addFilter=findViewById(R.id.addFilterOption);
+        addMusic=findViewById(R.id.addMusicOption);
+        trimVideo=findViewById(R.id.trimOption);
+        saveVideo=findViewById(R.id.saveOption);
+        shareVideo=findViewById(R.id.shareOption);
     }
 
     private void setListeners()
     {
 
-        btn.setOnClickListener(new View.OnClickListener() {
+        trimDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -368,7 +358,7 @@ public class EditVideo extends AppCompatActivity {
                                 seek.getSelectedMaxValue().intValue()*1000,
                                 filePrefix);
 
-                        Intent in=new Intent(EditVideo.this, WaitingActivity.class);
+                            Intent in=new Intent(EditVideo.this, WaitingActivity.class);
                         in.putExtra("dur", dur);
                         Log.d("myvid", "onCreate dur val* in trimact: "+dur);
                         in.putExtra("cmd", cmd);
@@ -376,12 +366,10 @@ public class EditVideo extends AppCompatActivity {
 //                        in.putExtra("dest", dest.getAbsolutePath());
                         Log.d("pth", "onClick: "+_dest.getAbsolutePath());
                         in.putExtra("dest", _dest.getAbsolutePath());
-                        startActivity(in);
-
-
-                        finish();
                         dialogInterface.dismiss();
-
+                        startActivityForResult(in,1122);
+//                        setVideoView();
+//                        finish();
                     }
                 });
 
@@ -390,31 +378,40 @@ public class EditVideo extends AppCompatActivity {
             }
         });
 
-//        playpause.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (isPlaying)
-//                {
-//                    playpause.setImageResource(R.drawable.ic_pause_foreground);
-////                    vidview.pause();
-//                    isPlaying=false;
-//                }
-//                else
-//                {
-//                    vidview.start();
-//                    playpause.setImageResource(R.drawable.ic_play_foreground);
-//                    isPlaying=true;
-//                }
-//            }
-//        });
+        trimClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                bsheetTrim.setState(BottomSheetBehavior.STATE_HIDDEN);
+            }
+        });
+    }
 
+    private void setTrimViews() {
+        start=findViewById(R.id.startTV_trimSheet);
+        stop=findViewById(R.id.stopTV_trimSheet);
+        seek=findViewById(R.id.seek_trimSheet);
+        trimDone=findViewById(R.id.done_icon_trimSheet);
+        trimClose=findViewById(R.id.cross_icon_trimSheet);
+    }
 
+    private void setVideoView() {
+        videoView=findViewById(R.id.videoView);
+        videoView.setVideoPath(selectedVideoPath);
+        mediaController=new MediaController(this);
+        mediaController.setAnchorView(videoView);
+        videoView.setMediaController(mediaController);
+        videoView.seekTo( 1 );
+        videoView.start();
+
+        //<==================================>//
         videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
-            public void onPrepared(MediaPlayer mediaPlayer) {
-//                dur=mediaPlayer.getDuration()/1000;
+            public void onPrepared(MediaPlayer mediaPlayer)
+            {
+                dur=videoView.getDuration()/1000;
                 Log.d("dur", "onPrepared: "+dur);
-                start.setText(getFormattedTime(dur));
+                start.setText(getFormattedTime(0));
+                stop.setText(getFormattedTime(dur));
                 mediaPlayer.setLooping(true);
                 seek.setRangeValues(0, dur);
                 seek.setSelectedMaxValue(dur);
@@ -441,28 +438,6 @@ public class EditVideo extends AppCompatActivity {
                 },1000);
             }
         });
-    }
-
-    private void setTrimViews() {
-//        isPlaying=false;
-//        playpause=fin dViewById(R.id.playpause);
-//        vidview=findViewById(R.id.vidview);
-        start=findViewById(R.id.startTV_trimSheet);
-        stop=findViewById(R.id.stopTV_trimSheet);
-        seek=findViewById(R.id.seek_trimSheet);
-        btn=findViewById(R.id.done_icon_trimSheet);
-    }
-
-    private void setVideoView() {
-        videoView=findViewById(R.id.videoView);
-        videoView.setVideoPath(selectedVideoPath);
-        mediaController=new MediaController(this);
-        mediaController.setAnchorView(videoView);
-        videoView.setMediaController(mediaController);
-        dur=videoView.getDuration();
-        videoView.seekTo( 1 );
-        videoView.start();
-        Log.d("dur", "setVideoView: "+dur);
     }
 
     private void printKeyHash() {
@@ -600,7 +575,6 @@ public class EditVideo extends AppCompatActivity {
             File dir= new File(Environment.getExternalStoragePublicDirectory(
                     Environment.DIRECTORY_PICTURES),"/Obstructy");
 
-//            File dir=new File(dest.getPath(),"/Obstructy");
             if (! dir.exists()){
                 if (! dir.mkdirs()){
                     Log.d("myvid", "failed to create directory");
@@ -618,7 +592,6 @@ public class EditVideo extends AppCompatActivity {
                         +", w can path: "+dir.getCanonicalPath());
             }
 
-//            Time now=new Time();
             String dt=(new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())).format(new Date());
             Log.d("myvid", "vid time: "+ dt);
 
@@ -688,12 +661,6 @@ public class EditVideo extends AppCompatActivity {
         dest=dir.getAbsolutePath();
 
     }
-
-//    void openVideo(){
-//        Intent i=new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-//        i.setType("video/*");
-//        startActivityForResult(i, 100);
-//    }
 
     private void selectAudioFile() {
 
@@ -781,6 +748,13 @@ public class EditVideo extends AppCompatActivity {
                 Log.d("add", "onActivityResult: Error, version issues...");
                 finish();
             }
+        }
+        else if (resultCode==RESULT_OK && requestCode==1122)
+        {
+            Log.d("_dest",_dest.getAbsolutePath());
+            EditVideo.selectedVideoPath=_dest.getAbsolutePath();
+            LoadVideo.uri= Uri.parse(EditVideo.selectedVideoPath);
+            setVideoView();
         }
     }
 
@@ -872,8 +846,6 @@ public class EditVideo extends AppCompatActivity {
         return String.format("%02d:", h)+
                 String.format("%02d:", min)+
                 String.format("%02d:", sec);
-
-
     }
 
 }

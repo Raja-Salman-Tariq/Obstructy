@@ -43,7 +43,7 @@
         rsb_progress_color="#000000"
         rsb_progress_default_color="#FFFFFF"
         rsb_tick_mark_text_color="#000000"
-        android:layout_below="@+id/done_icon_trimSheet">
+        android:layout_marginTop="25dp">
     </org.florescu.android.rangeseekbar.RangeSeekBar>
 
     <TextView
@@ -51,7 +51,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/startTV_trimSheet"
         android:textSize="13dp"
-        android:layout_marginTop="17dp"
+        android:layout_marginTop="3dp"
         android:layout_marginLeft="@dimen/_10sdp"
         android:text="00:00:00"
         android:textColor="#000"
@@ -66,7 +66,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/stopTV_trimSheet"
         android:textSize="14dp"
-        android:layout_marginTop="14dp"
+        android:layout_marginTop="3dp"
         android:layout_marginRight="@dimen/_10sdp"
         android:text="00:00:00"
         android:textColor="#000"
@@ -76,33 +76,33 @@
 
     </TextView>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/seek_trimSheet"
-        android:layout_marginTop="5dp"
-        android:orientation="horizontal"
-        android:gravity="center">
+<!--    <LinearLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_below="@+id/seek_trimSheet"-->
+<!--        android:layout_marginTop="5dp"-->
+<!--        android:orientation="horizontal"-->
+<!--        android:gravity="center">-->
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="File Name:"
-            android:textColor="#000"
-            android:textSize="17dp">
-        </TextView>
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="File Name:"-->
+<!--            android:textColor="#000"-->
+<!--            android:textSize="17dp">-->
+<!--        </TextView>-->
 
-        <EditText
-            android:id="@+id/fileName_trimSheet"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="New_File"
-            android:textSize="15dp"
-            android:textColorHint="#918989"
-            android:layout_marginLeft="3dp">
+<!--        <EditText-->
+<!--            android:id="@+id/fileName_trimSheet"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:hint="New_File"-->
+<!--            android:textSize="15dp"-->
+<!--            android:textColorHint="#918989"-->
+<!--            android:layout_marginLeft="3dp">-->
 
-        </EditText>
+<!--        </EditText>-->
 
-    </LinearLayout>
+<!--    </LinearLayout>-->
 
 </RelativeLayout>

@@ -69,8 +69,8 @@
 
                 <ImageButton
                     android:id="@+id/removeObstructionOption"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
                     android:layout_gravity="center"
                     android:background="@drawable/circle_background"
                     android:src="@drawable/ic_obstruction_removal"

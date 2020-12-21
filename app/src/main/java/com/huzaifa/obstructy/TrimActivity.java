@@ -74,8 +74,6 @@ public class TrimActivity extends AppCompatActivity {
         }
         
         setListeners();
-
-
     }
 
     private void setListeners()
