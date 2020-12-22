@@ -70,10 +70,6 @@ public class LoadVideo extends AppCompatActivity {
         super.onActivityResult(reqCode, resCode, data);
         if (resCode == RESULT_OK && data != null) {
             uri = data.getData();
-
-
-
-
             String videoPath = getPath(getApplicationContext(), uri);
             Log.d("path", "onActivityResult: "+videoPath);
             Intent intent=new Intent(LoadVideo.this,EditVideo.class);

@@ -179,7 +179,7 @@ public class EditVideo extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 bsheetSave.setState(BottomSheetBehavior.STATE_EXPANDED);
-                saveVideo();
+                setSaveListeners();
             }
         });
 
@@ -346,6 +346,23 @@ public class EditVideo extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void setSaveListeners()
+    {
+        saveDone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                saveVideo();
+            }
+        });
+
+        saveClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                bsheetSave.setState(BottomSheetBehavior.STATE_HIDDEN);
+            }
+        });
     }
 
 
@@ -611,6 +628,13 @@ public class EditVideo extends AppCompatActivity {
                 },1000);
             }
         });
+        videoView.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+            @Override
+            public boolean onError(MediaPlayer mp, int what, int extra) {
+                Log.d("video", "setOnErrorListener ");
+                return true;
+            }
+        });
     }
 
     private void printKeyHash() {
@@ -709,88 +733,70 @@ public class EditVideo extends AppCompatActivity {
         return mediaFile;
     }
 
-    void saveVideo(Uri video){
+    void saveVideo()
+    {
 
-        Uri uri=getOutputMediaFileUri();
+        String fileName=saveFileName.getText().toString();
+        if(fileName.equals(""))
+        {
+            Toast.makeText(EditVideo.this, "Enter New File Name", Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            try {
+                Uri u= getIntent().getData();
+                InputStream is = getContentResolver().openInputStream(u);
 
-    }
+                DataInputStream dis = new DataInputStream(is);
 
+                byte[] buffer = new byte[1024];
+                int length;
 
-    void saveVideo(){
-        saveDone.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                bsheetSave.setState(BottomSheetBehavior.STATE_HIDDEN);
-
-                String fileName=saveFileName.getText().toString();
-                if(fileName.equals(""))
+                Uri dest;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
                 {
-                    Toast.makeText(myServe, "Enter New File Name", Toast.LENGTH_SHORT).show();
+                    dest = MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
                 }
                 else
                 {
-                    try {
-                        Uri u= getIntent().getData();
-                        InputStream is = getContentResolver().openInputStream(u);
+                    dest = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+                }
 
-                        DataInputStream dis = new DataInputStream(is);
-
-                        byte[] buffer = new byte[1024];
-                        int length;
-
-                        Uri dest;
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-                        {
-                            dest = MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
-                        }
-                        else
-                        {
-                            dest = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
-                        }
-
-                        File dir= new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),"/Obstructy");
-                        if (! dir.exists())
-                        {
-                            if (! dir.mkdirs())
-                            {
-                                return;
-                            }
-                            else
-                            {
-                                Log.d("myvid", "dir made at abs: "+dir.getAbsolutePath() +", w path: "+dir.getPath() +", w can path: "+dir.getCanonicalPath());
-                            }
-                        }
-                        else
-                        {
-                            Log.d("myvid", "dir existed at abs: "+dir.getAbsolutePath() +", w path: "+dir.getPath()+", w can path: "+dir.getCanonicalPath());
-                        }
-
-                        File mFile=new File(dir.getAbsolutePath()+File.separator+ fileName +".mp4");
-
-                        FileOutputStream fos = new FileOutputStream(mFile);
-
-                        while ((length = dis.read(buffer))>0) {
-                            fos.write(buffer, 0, length);
-                        }
-
-                        Toast.makeText(EditVideo.this, "Saved Successfully", Toast.LENGTH_SHORT).show();
-                    } catch (MalformedURLException mue) {
-                        Log.e("SYNC getUpdate", "malformed url error", mue);
-                    } catch (IOException ioe) {
-                        Log.e("SYNC getUpdate", "io error", ioe);
-                    } catch (SecurityException se) {
-                        Log.e("SYNC getUpdate", "security error", se);
+                File dir= new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),"/Obstructy");
+                if (! dir.exists())
+                {
+                    if (! dir.mkdirs())
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        Log.d("myvid", "dir made at abs: "+dir.getAbsolutePath() +", w path: "+dir.getPath() +", w can path: "+dir.getCanonicalPath());
                     }
                 }
-            }
-        });
+                else
+                {
+                    Log.d("myvid", "dir existed at abs: "+dir.getAbsolutePath() +", w path: "+dir.getPath()+", w can path: "+dir.getCanonicalPath());
+                }
 
-        saveClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+                File mFile=new File(dir.getAbsolutePath()+File.separator+ fileName +".mp4");
 
+                FileOutputStream fos = new FileOutputStream(mFile);
+
+                while ((length = dis.read(buffer))>0) {
+                    fos.write(buffer, 0, length);
+                }
+
+                bsheetSave.setState(BottomSheetBehavior.STATE_HIDDEN);
+                Toast.makeText(EditVideo.this, "Saved Successfully", Toast.LENGTH_SHORT).show();
+            } catch (MalformedURLException mue) {
+                Log.e("SYNC getUpdate", "malformed url error", mue);
+            } catch (IOException ioe) {
+                Log.e("SYNC getUpdate", "io error", ioe);
+            } catch (SecurityException se) {
+                Log.e("SYNC getUpdate", "security error", se);
             }
-        });
+        }
     }
 
     private void getDest() {
