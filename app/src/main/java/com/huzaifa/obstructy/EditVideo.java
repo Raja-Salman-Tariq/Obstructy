@@ -19,9 +19,11 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
@@ -86,10 +88,7 @@ import okhttp3.Response;
 import static com.huzaifa.obstructy.LoadVideo.getPath;
 
 public class EditVideo extends AppCompatActivity {
-    MediaPlayer soundCtrlr;
-    MediaController soundMediaCtrl;
 
-    TextView start, stop;
     //<=================Progress=================>//
     CircleProgressBar progress;
     ServiceConnection myConn;
@@ -116,6 +115,14 @@ public class EditVideo extends AppCompatActivity {
     String filePrefix;
     static File _dest;
     //<------------------------------------------>//
+
+    //<=================MUSIC VARIABLES=================>//
+    MediaPlayer soundCtrlr;
+    ImageButton musicDone, musicClose;
+    ImageButton musicPlay, chooseMusicFile;
+    TextView musicFileName;
+    //<------------------------------------------>//
+
 
 
     RelativeLayout trimPopup, musicpopup,savePopup;
@@ -153,6 +160,7 @@ public class EditVideo extends AppCompatActivity {
         selectedVideoPath=getIntent().getStringExtra("videoPath");
         setTrimViews();
         setSaveViews();
+        setMusicViews();
         assignSheetViews();
         setVideoView();
         assignEditViews();
@@ -162,11 +170,27 @@ public class EditVideo extends AppCompatActivity {
             public void onClick(View view) {
 
                 bsheetMusic.setState(BottomSheetBehavior.STATE_EXPANDED);
-                setListeners();
                 getDest();
-//                selectAudioFile(); // adding musinc called in on activity result of select audio file fun
+                setMusicListeners();
             }
         });
+
+        saveVideo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                bsheetSave.setState(BottomSheetBehavior.STATE_EXPANDED);
+                saveVideo();
+            }
+        });
+
+        trimVideo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                bsheetTrim.setState(BottomSheetBehavior.STATE_EXPANDED);
+                setTrimListeners();
+            }
+        });
+
 
         addFilter.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -322,83 +346,17 @@ public class EditVideo extends AppCompatActivity {
             }
         });
 
-        saveVideo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                bsheetSave.setState(BottomSheetBehavior.STATE_EXPANDED);
-                saveVideo();
-            }
-        });
+    }
 
-        trimVideo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                bsheetTrim.setState(BottomSheetBehavior.STATE_EXPANDED);
-                setListeners();
-            }
-        });
 
+    private void setMusicViews()
+    {
         soundCtrlr=new MediaPlayer();
-        soundMediaCtrl=null;
-        soundCtrlr.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                Log.d("sound", "onPrepared: "+soundCtrlr.getDuration());
-                soundCtrlr.start();
-            }
-        });
-
-        findViewById(R.id.cross_icon_musicSheet).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                bsheetMusic.setState(BottomSheetBehavior.STATE_HIDDEN);
-            }
-        });
-
-        findViewById(R.id.done_icon_musicSheet).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    addAudio();
-                } catch (FFmpegNotSupportedException | FFmpegCommandAlreadyRunningException e) {
-                    e.printStackTrace();
-                }
-
-//                startActivity(new Intent(EditVideo.this, WaitingActivity.class));
-            }
-        });
-
-        findViewById(R.id.musicChange).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectAudioFile();
-            }
-        });
-
-        findViewById(R.id.musicPlayPause).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(EditVideo.this,
-                        "Working...",
-                        Toast.LENGTH_SHORT).show();
-                if (soundCtrlr!=null){
-//                    soundCtrlr.setDataSource(EditVideo.this, auFilePath);
-                    if (soundCtrlr.isPlaying()) {
-                        soundCtrlr.pause();
-                        findViewById(R.id.musicPlayPause).setBackgroundResource(R.drawable.ic_music_play);
-                    }
-                    else {
-                        soundCtrlr.start();
-                        findViewById(R.id.musicPlayPause).setBackgroundResource(R.drawable.ic_music_pause);
-                    }
-                }
-                else{
-                    Toast.makeText(EditVideo.this,
-                            "Please select an audio file first",
-                            Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+        musicDone=findViewById(R.id.done_icon_musicSheet);
+        musicClose=findViewById(R.id.cross_icon_musicSheet);
+        musicPlay=findViewById(R.id.musicPlayPause);
+        chooseMusicFile=findViewById(R.id.musicChange);
+        musicFileName=findViewById(R.id.musicFile);
     }
 
     private void setSaveViews()
@@ -434,7 +392,86 @@ public class EditVideo extends AppCompatActivity {
         shareVideo=findViewById(R.id.shareOption);
     }
 
-    private void setListeners()
+    private void setMusicListeners()
+    {
+        soundCtrlr.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                Log.d("sound", "onPrepared: "+soundCtrlr.getDuration());
+                soundCtrlr.start();
+            }
+        });
+
+        musicClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Stop Music If Playing
+                if (soundCtrlr.isPlaying()) {
+                    soundCtrlr.pause();
+                    findViewById(R.id.musicPlayPause).setBackgroundResource(R.drawable.ic_music_play);
+                }
+                bsheetMusic.setState(BottomSheetBehavior.STATE_HIDDEN);
+            }
+        });
+
+        musicDone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Stop Music If Playing
+                if (soundCtrlr.isPlaying()) {
+                    soundCtrlr.pause();
+                    findViewById(R.id.musicPlayPause).setBackgroundResource(R.drawable.ic_music_play);
+                }
+
+                if (musicFileName.getText().equals("No File Selected"))
+                {
+                    Toast.makeText(EditVideo.this, "Choose an audio file", Toast.LENGTH_SHORT).show();
+                }
+
+                else {
+                    addAudio();
+                    bsheetMusic.setState(BottomSheetBehavior.STATE_HIDDEN);
+                    initiateTask();
+                }
+            }
+        });
+
+        chooseMusicFile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Stop Music If Playing
+                if (soundCtrlr.isPlaying()) {
+                    soundCtrlr.pause();
+                    findViewById(R.id.musicPlayPause).setBackgroundResource(R.drawable.ic_music_play);
+                }
+                selectAudioFile();
+            }
+        });
+
+        musicPlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (soundCtrlr!=null){
+                    if (soundCtrlr.isPlaying()) {
+                        soundCtrlr.pause();
+                        findViewById(R.id.musicPlayPause).setBackgroundResource(R.drawable.ic_music_play);
+                    }
+                    else {
+                        soundCtrlr.start();
+                        findViewById(R.id.musicPlayPause).setBackgroundResource(R.drawable.ic_music_pause);
+                    }
+                }
+                else{
+                    Toast.makeText(EditVideo.this,
+                            "Please select an audio file first",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+
+    private void setTrimListeners()
     {
         trimDone.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -493,10 +530,20 @@ public class EditVideo extends AppCompatActivity {
                             progress.setProgress(100);
                             stopService(myServiceInt);
 
-                            Toast.makeText(getApplicationContext(), "Task Successful !", Toast.LENGTH_SHORT).show();
                             selectedVideoPath=_dest.getAbsolutePath();
                             LoadVideo.uri= Uri.parse(EditVideo.selectedVideoPath);
                             progress.setVisibility(View.INVISIBLE);
+
+                            String tName="";
+
+                            if (cmd[0].equals("-i")){
+                                tName="Music Added Successfully";
+                            }
+                            else{
+                                tName="Video Cropped Successfully";
+                            }
+
+                            Toast.makeText(EditVideo.this, tName, Toast.LENGTH_SHORT).show();
                             setVideoView();
                         }
                     }
@@ -509,6 +556,7 @@ public class EditVideo extends AppCompatActivity {
         };
         bindService(myServiceInt, myConn, Context.BIND_AUTO_CREATE);
         //<=================================================================================================================================>//
+
     }
 
     private void setTrimViews() {
@@ -801,21 +849,12 @@ public class EditVideo extends AppCompatActivity {
 
     }
 
-    private void addAudio() throws FFmpegNotSupportedException, FFmpegCommandAlreadyRunningException {
+    private void addAudio(){
+        manageDestNDirs();
 
-        String dt=(new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())).format(new Date());
         cmd = new String[] {"-i", selectedVideoPath, "-i", auFilePath,
                 "-c", "copy", "-map", "0:0", "-map", "1:0",
-                "-shortest", dest+"/BGM"+dt+".mp4"};
-
-        bsheetMusic.setState(BottomSheetBehavior.STATE_HIDDEN);
-
-        initiateTask();
-
-//        Log.d("myvid","HALUUUUUUU");
-        Toast.makeText(EditVideo.this, "Done", Toast.LENGTH_SHORT).show();
-//        selectedVideoPath=_dest.getAbsolutePath();
-        setVideoView();
+                "-shortest", _dest.getAbsolutePath()};
     }
 
     @Override
