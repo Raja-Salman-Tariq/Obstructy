@@ -123,15 +123,18 @@ public class EditVideo extends AppCompatActivity {
     TextView musicFileName;
     //<------------------------------------------>//
 
-
+    //<=================SPEEDUP SHEET VARIABLES=================>//
+    ImageButton speedupDone, speedupClose;
+    ImageButton _x125, _x15, _x175, _x2;
+    float speedUpVal;
+    //<------------------------------------------>//
 
     //<=================BOTTOM SHEET VARIABLES=================>//
-    RelativeLayout trimPopup, musicpopup,savePopup;
-    BottomSheetBehavior bsheetTrim, bsheetMusic,bsheetSave;
+    RelativeLayout trimPopup, musicpopup,savePopup, speedUpPopup;
+    BottomSheetBehavior bsheetTrim, bsheetMusic,bsheetSave, bsheetSpeedUp;
     String auFilePath, dest;
     String [] cmd;
     //<------------------------------------------>//
-
 
 
     //<=================EDIT VIDEO LAYOUT VARIABLES=================>//
@@ -142,6 +145,7 @@ public class EditVideo extends AppCompatActivity {
     private ImageButton trimVideo;
     private ImageButton saveVideo;
     private ImageButton shareVideo;
+    private ImageButton speedUp;
     static String selectedVideoPath;
     VideoView videoView;
     MediaController mediaController;
@@ -163,10 +167,20 @@ public class EditVideo extends AppCompatActivity {
         selectedVideoPath=getIntent().getStringExtra("videoPath");
         setTrimViews();
         setSaveViews();
+        setSpeedUpViews();
         setMusicViews();
         assignSheetViews();
         setVideoView();
         assignEditViews();
+
+        speedUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bsheetSpeedUp.setState(BottomSheetBehavior.STATE_EXPANDED);
+                speedUpVal=1;
+                setSpeedUpListeners();
+            }
+        });
 
         addMusic.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -357,6 +371,53 @@ public class EditVideo extends AppCompatActivity {
 
     }
 
+    private void setSpeedUpListeners() {
+
+        speedupDone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                speedUp();
+                bsheetMusic.setState(BottomSheetBehavior.STATE_HIDDEN);
+                initiateTask();
+            }
+        });
+
+        speedupClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                bsheetSpeedUp.setState(BottomSheetBehavior.STATE_HIDDEN);
+            }
+        });
+
+        _x125.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                speedUpVal=(float)1.25;
+            }
+        });
+
+        _x15.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                speedUpVal=(float)1.5;
+            }
+        });
+
+        _x175.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                speedUpVal=(float)1.75;
+            }
+        });
+
+        _x2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                speedUpVal=(float)2;
+            }
+        });
+    }
+
     private void setSaveListeners()
     {
         saveDone.setOnClickListener(new View.OnClickListener() {
@@ -392,6 +453,15 @@ public class EditVideo extends AppCompatActivity {
         saveFileName=findViewById(R.id.saveFileName_saveSheet);
     }
 
+    private void setSpeedUpViews() {
+        speedupDone=findViewById(R.id.done_icon_speedupSheet);
+        speedupClose=findViewById(R.id.cross_icon_speedupSheet);
+        _x125=findViewById(R.id.speed125_icon_speedUpSheet);
+        _x15=findViewById(R.id.speed15_icon_speedUpSheet);
+        _x175=findViewById(R.id.speed175_icon_speedUpSheet);
+        _x2=findViewById(R.id.speed2_icon_speedUpSheet);
+    }
+
     private void assignSheetViews()
     {
         trimPopup=findViewById(R.id.trim_bottom_sheet_dialogue);
@@ -405,6 +475,15 @@ public class EditVideo extends AppCompatActivity {
         savePopup=findViewById(R.id.saveBottomSheet);
         bsheetSave= BottomSheetBehavior.from(savePopup);
         bsheetSave.setState(BottomSheetBehavior.STATE_HIDDEN);
+
+        speedUpPopup=findViewById(R.id.speedupBottomSheet);
+        if (speedUpPopup==null){
+            Toast.makeText(this, "gahahahaha", Toast.LENGTH_SHORT).show();
+            Log.d("popup", "assignSheetViews: was null");
+        }
+        bsheetSpeedUp=BottomSheetBehavior.from(speedUpPopup);
+        bsheetSpeedUp.setState(BottomSheetBehavior.STATE_HIDDEN);
+
     }
 
     private void assignEditViews()
@@ -416,6 +495,7 @@ public class EditVideo extends AppCompatActivity {
         trimVideo=findViewById(R.id.trimOption);
         saveVideo=findViewById(R.id.saveOption);
         shareVideo=findViewById(R.id.shareOption);
+        speedUp=findViewById(R.id.speedUpOption);
     }
 
     private void setMusicListeners()
@@ -917,6 +997,17 @@ public class EditVideo extends AppCompatActivity {
         cmd=new String[]{"-ss", ""+start/1000, "-y", "-i", selectedVideoPath, "-t", ""+(stop-start)/1000,
                 "-vcodec", "mpeg4", "-b:v", "2097152", "-b:a", "48000", "-ac", "2", "-ar", "22050",
                 _dest.getAbsolutePath()};
+    }
+
+    private void speedUp(){
+
+        manageDestNDirs();
+
+        cmd=new String[]{"-i", selectedVideoPath,"-filter_complex",
+                "\"[0:v]setpts=",Float.toString(1/speedUpVal),"*PTS[v];",
+                "[0:a]atempo=",Float.toString(speedUpVal),"[a]\"",
+                "-map \"[v]\" -map \"[a]\"", _dest.getAbsolutePath()};
+
     }
 
     private void manageDestNDirs() {
