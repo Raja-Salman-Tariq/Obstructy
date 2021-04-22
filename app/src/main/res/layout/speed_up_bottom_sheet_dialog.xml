@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+
+    android:paddingTop="5dp"
+    android:id="@+id/speedup_bottom_sheet_dialogue"
+    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+    app:behavior_hideable="true"
+    android:background="@drawable/card2">
+
+    <ImageButton
+        android:id="@+id/cross_icon_trimSheet"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:src="@drawable/ic_cross_icon"
+        android:layout_marginLeft="15dp"
+        android:background="@null"
+        android:clickable="true"
+        android:focusable="true">
+    </ImageButton>
+
+    <ImageButton
+        android:id="@+id/done_icon_trimSheet"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/ic_done_icon"
+        android:layout_marginRight="15dp"
+        android:background="@null"
+        android:clickable="true"
+        android:focusable="true">
+    </ImageButton>
+
+    <org.florescu.android.rangeseekbar.RangeSeekBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:id="@+id/seek_trimSheet"
+        rsb_indicator_text_color="#ffffff"
+        rsb_progress_color="#000000"
+        rsb_progress_default_color="#FFFFFF"
+        rsb_tick_mark_text_color="#000000"
+        android:layout_marginTop="25dp">
+    </org.florescu.android.rangeseekbar.RangeSeekBar>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/startTV_trimSheet"
+        android:layout_marginLeft="25dp"
+        android:textSize="13dp"
+        android:layout_marginTop="3dp"
+        android:text="00:00:00"
+        android:textColor="#000"
+        android:layout_below="@+id/cross_icon_trimSheet">
+
+    </TextView>
+
+    <TextView
+        android:layout_alignParentEnd="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/stopTV_trimSheet"
+        android:textSize="14dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginRight="25dp"
+        android:text="00:00:00"
+        android:textColor="#000"
+        android:gravity="end"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/done_icon_trimSheet">
+
+    </TextView>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="9dp"
+        android:layout_marginRight="9dp"
+        android:layout_below="@id/seek_trimSheet"
+        android:background="#FDABD7">
+    </View>
+
+</RelativeLayout>
