@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".EditVideo"
-    android:background="@drawable/background">
+    android:background="@drawable/background3">
 
     <ImageView
         android:id="@+id/logo_EditScreen"
@@ -37,7 +37,9 @@
         android:layout_above="@+id/horror"
         android:layout_below="@+id/videoPreview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="2dp">
 
         <include layout="@layout/trim_bottom_sheet_dialogue"/>
         <include layout="@layout/musicpopup"/>
@@ -50,9 +52,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="@drawable/card2"
+        android:background="@drawable/card3"
         android:paddingLeft="2dp"
-        android:paddingRight="2dp">
+        android:paddingRight="2dp"
+        android:backgroundTint="#F1EFEF">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -200,7 +203,8 @@
                     android:layout_gravity="center"
                     android:background="@drawable/circle_background"
                     android:src="@drawable/ic_trim"
-                    android:clickable="true">
+                    android:clickable="true"
+                    android:elevation="3dp">
 
                 </ImageButton>
 

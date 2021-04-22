@@ -52,7 +52,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:background="#D4FFFB">
+                android:background="#FDABD7">
 
                 <ImageView
                     android:id="@+id/whatsapp_icon"
@@ -187,7 +187,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:background="#AAFFF6">
+                android:background="#FB5FB3">
 
                 <ImageView
                     android:id="@+id/instagram_icon"

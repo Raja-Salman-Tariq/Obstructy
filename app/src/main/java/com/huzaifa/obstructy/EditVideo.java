@@ -125,10 +125,13 @@ public class EditVideo extends AppCompatActivity {
 
 
 
+    //<=================BOTTOM SHEET VARIABLES=================>//
     RelativeLayout trimPopup, musicpopup,savePopup;
     BottomSheetBehavior bsheetTrim, bsheetMusic,bsheetSave;
     String auFilePath, dest;
     String [] cmd;
+    //<------------------------------------------>//
+
 
 
     //<=================EDIT VIDEO LAYOUT VARIABLES=================>//
@@ -318,7 +321,13 @@ public class EditVideo extends AppCompatActivity {
         removeObstruction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String postUrl= "http://192.168.100.34:5000/";
+//                String postUrl= "https://18.191.169.57:8080/";
+//                String postUrl= "https://127.0.0.1:5000/";
+//                String postUrl= "http://192.168.1.9:5000/";
+//                String postUrl= "http://30.40.73.47:5000/";   //Works fine for local host
+//                String postUrl= "https://18.221.206.247:8080/";
+                String postUrl= "http://172.16.0.1:8080/";
+
 
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                 try {
@@ -548,7 +557,8 @@ public class EditVideo extends AppCompatActivity {
                             stopService(myServiceInt);
 
                             selectedVideoPath=_dest.getAbsolutePath();
-                            LoadVideo.uri= Uri.parse(EditVideo.selectedVideoPath);
+                            LoadVideo.uri= Uri.fromFile(new File(selectedVideoPath));
+
                             progress.setVisibility(View.INVISIBLE);
 
                             String tName="";
@@ -669,15 +679,17 @@ public class EditVideo extends AppCompatActivity {
 
         client.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e) {
+            public void onFailure(Call call, final IOException e) {
                 // Cancel the post on failure.
+
                 call.cancel();
 
                 // In order to access the TextView inside the UI thread, the code is executed inside runOnUiThread()
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(EditVideo.this, "Uploading Failed",Toast.LENGTH_LONG).show();
+                        Toast.makeText(EditVideo.this, "Uploading Failed + "+e.getMessage(),Toast.LENGTH_LONG).show();
+                        Log.d("help",e.getMessage().toString());
                     }
                 });
             }
@@ -744,7 +756,7 @@ public class EditVideo extends AppCompatActivity {
         else
         {
             try {
-                Uri u= getIntent().getData();
+                Uri u=Uri.fromFile(new File(selectedVideoPath));
                 InputStream is = getContentResolver().openInputStream(u);
 
                 DataInputStream dis = new DataInputStream(is);

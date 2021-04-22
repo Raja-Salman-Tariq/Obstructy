@@ -17,7 +17,7 @@
         android:layout_width="35dp"
         android:layout_height="35dp"
         android:src="@drawable/ic_cross_icon"
-        android:background="#FFFF"
+        android:background="@null"
         android:clickable="true"
         android:layout_marginLeft="15dp"
         android:focusable="true">
@@ -30,26 +30,28 @@
         android:layout_alignParentRight="true"
         android:layout_marginRight="15dp"
         android:src="@drawable/ic_done_icon"
-        android:background="#FFFF"
+        android:background="@null"
         android:clickable="true"
         android:focusable="true">
     </ImageButton>
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
-        android:layout_marginTop="3dp"
         android:layout_below="@id/cross_icon_musicSheet">
 
         <ImageButton
             android:id="@+id/musicPlayPause"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:src="@drawable/ic_music_play"
             android:layout_marginRight="20dp"
-            android:background="@android:color/transparent"/>
+            android:background="@android:color/transparent">
+
+        </ImageButton>
 
 
         <TextView
@@ -63,16 +65,20 @@
 
     <ImageButton
         android:id="@+id/musicChange"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:background="@drawable/circle_background"
-        android:src="@drawable/ic_music_icon"
-        />
+        android:src="@drawable/ic_music_icon1">
 
+    </ImageButton>
 
     </LinearLayout>
 
-
-
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/linearLayout"
+        android:background="#FDABD7">
+    </View>
 
 </RelativeLayout>

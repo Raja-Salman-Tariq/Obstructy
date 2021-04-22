@@ -17,7 +17,7 @@
         android:layout_width="35dp"
         android:layout_height="35dp"
         android:src="@drawable/ic_cross_icon"
-        android:background="#FFFF"
+        android:background="@null"
         android:clickable="true"
         android:focusable="true">
     </ImageButton>
@@ -28,12 +28,13 @@
         android:layout_height="35dp"
         android:layout_alignParentRight="true"
         android:src="@drawable/ic_done_icon"
-        android:background="#FFFF"
+        android:background="@null"
         android:clickable="true"
         android:focusable="true">
     </ImageButton>
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -63,4 +64,11 @@
         </EditText>
 
     </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/linearLayout"
+        android:background="#FDABD7">
+    </View>
 </RelativeLayout>

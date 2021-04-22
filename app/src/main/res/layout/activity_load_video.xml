@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".LoadVideo"
-    android:background="@drawable/background">
+    android:background="@drawable/background3">
 
     <ImageView
         android:id="@+id/logo_LoadScreen"
@@ -20,7 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:backgroundTint="#FFFF"
+        android:backgroundTint="#F1EFEF"
         app:cardCornerRadius="20dp"
         android:elevation="15dp">
 
@@ -38,8 +38,8 @@
 
                 <ImageButton
                     android:id="@+id/galleryOption"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
+                    android:layout_width="75dp"
+                    android:layout_height="75dp"
                     android:src="@drawable/ic_gallery"
                     android:background="@drawable/circle_background"
                     android:clickable="true">
@@ -50,7 +50,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="Gallery">
+                    android:text="Gallery"
+                    android:textColor="#000">
                 </TextView>
 
             </LinearLayout>
@@ -65,8 +66,8 @@
 
                 <ImageButton
                     android:id="@+id/cameraOption"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
+                    android:layout_width="75dp"
+                    android:layout_height="75dp"
                     android:src="@drawable/ic_camera"
                     android:background="@drawable/circle_background"
                     android:clickable="true">
@@ -77,7 +78,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="Camera">
+                    android:text="Camera"
+                    android:textColor="#000">
                 </TextView>
 
             </LinearLayout>
