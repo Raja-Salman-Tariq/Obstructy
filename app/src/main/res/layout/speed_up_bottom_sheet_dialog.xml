@@ -4,85 +4,161 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-
+    android:paddingLeft="15dp"
+    android:paddingRight="15dp"
     android:paddingTop="5dp"
-    android:id="@+id/speedup_bottom_sheet_dialogue"
+    android:id="@+id/fastMotionBottomSheet"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
     app:behavior_hideable="true"
     android:background="@drawable/card2">
 
     <ImageButton
-        android:id="@+id/cross_icon_trimSheet"
+        android:id="@+id/cross_icon_fastMotionSheet"
         android:layout_width="35dp"
         android:layout_height="35dp"
         android:src="@drawable/ic_cross_icon"
-        android:layout_marginLeft="15dp"
         android:background="@null"
         android:clickable="true"
         android:focusable="true">
     </ImageButton>
 
     <ImageButton
-        android:id="@+id/done_icon_trimSheet"
+        android:id="@+id/done_icon_fastMotionSheet"
         android:layout_width="35dp"
         android:layout_height="35dp"
         android:layout_alignParentRight="true"
         android:src="@drawable/ic_done_icon"
-        android:layout_marginRight="15dp"
         android:background="@null"
         android:clickable="true"
         android:focusable="true">
     </ImageButton>
 
-    <org.florescu.android.rangeseekbar.RangeSeekBar
+    <LinearLayout
+        android:id="@+id/LLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
-        android:id="@+id/seek_trimSheet"
-        rsb_indicator_text_color="#ffffff"
-        rsb_progress_color="#000000"
-        rsb_progress_default_color="#FFFFFF"
-        rsb_tick_mark_text_color="#000000"
-        android:layout_marginTop="25dp">
-    </org.florescu.android.rangeseekbar.RangeSeekBar>
+        android:orientation="horizontal"
+        android:layout_below="@+id/done_icon_fastMotionSheet"
+        android:layout_marginTop="5dp"
+        android:layout_centerInParent="true"
+        android:gravity="center">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/startTV_trimSheet"
-        android:layout_marginLeft="25dp"
-        android:textSize="13dp"
-        android:layout_marginTop="3dp"
-        android:text="00:00:00"
-        android:textColor="#000"
-        android:layout_below="@+id/cross_icon_trimSheet">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <ImageButton
+                android:id="@+id/firstButton"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_walk"
+                android:background="@drawable/speed_background">
+            </ImageButton>
 
-    </TextView>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textSize="12dp"
+                android:textStyle="bold"
+                android:text="1.25x">
 
-    <TextView
-        android:layout_alignParentEnd="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/stopTV_trimSheet"
-        android:textSize="14dp"
-        android:layout_marginTop="3dp"
-        android:layout_marginRight="25dp"
-        android:text="00:00:00"
-        android:textColor="#000"
-        android:gravity="end"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/done_icon_trimSheet">
+            </TextView>
+        </LinearLayout>
 
-    </TextView>
+        <View
+            android:layout_width="20dp"
+            android:layout_height="match_parent">
+        </View>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/secondButton"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_run"
+                android:background="@drawable/speed_background">
+            </ImageButton>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textSize="12dp"
+                android:textStyle="bold"
+                android:text="1.50x">
+
+            </TextView>
+        </LinearLayout>
+
+        <View
+            android:layout_width="20dp"
+            android:layout_height="match_parent">
+        </View>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/thirdButton"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_bike"
+                android:background="@drawable/speed_background">
+            </ImageButton>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textSize="12dp"
+                android:textStyle="bold"
+                android:text="1.75x">
+            </TextView>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="20dp"
+            android:layout_height="match_parent">
+        </View>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/fourthButton"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_bicycle"
+                android:background="@drawable/speed_background">
+            </ImageButton>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textSize="12dp"
+                android:textStyle="bold"
+                android:text="2.0x">
+            </TextView>
+
+        </LinearLayout>
+
+    </LinearLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginLeft="9dp"
-        android:layout_marginRight="9dp"
-        android:layout_below="@id/seek_trimSheet"
+        android:layout_below="@id/LLayout"
         android:background="#FDABD7">
     </View>
-
 </RelativeLayout>

@@ -5,6 +5,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
@@ -100,6 +101,7 @@ public class MyProgressService extends Service {
             @Override
             public void onFailure(String message) {
                 super.onFailure(message);
+                Log.d("prog", "onFailure: "+message);
                 pctg.setValue(100);
             }
 

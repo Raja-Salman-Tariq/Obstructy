@@ -44,6 +44,7 @@
         <include layout="@layout/trim_bottom_sheet_dialogue"/>
         <include layout="@layout/musicpopup"/>
         <include layout="@layout/save_bottom_sheet_dialog"/>
+        <include layout="@layout/speed_up_bottom_sheet_dialog"/>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

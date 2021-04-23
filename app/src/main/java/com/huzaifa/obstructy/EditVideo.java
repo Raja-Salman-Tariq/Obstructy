@@ -72,9 +72,11 @@ import java.net.MalformedURLException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
 import java.util.StringTokenizer;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -165,7 +167,7 @@ public class EditVideo extends AppCompatActivity {
         final ShareDialog shareDialog=new ShareDialog(this);
 
         selectedVideoPath=getIntent().getStringExtra("videoPath");
-//        setSpeedUpViews();
+        setSpeedUpViews();
         setTrimViews();
         setSaveViews();
         setMusicViews();
@@ -178,8 +180,8 @@ public class EditVideo extends AppCompatActivity {
             public void onClick(View v) {
                 bsheetSpeedUp.setState(BottomSheetBehavior.STATE_EXPANDED);
                 speedUpVal=1;
-                Toast.makeText(EditVideo.this, "Clicked Speed Up", Toast.LENGTH_SHORT).show();
-//                setSpeedUpListeners();
+//                Toast.makeText(EditVideo.this, "Clicked Speed Up", Toast.LENGTH_SHORT).show();
+                setSpeedUpListeners();
             }
         });
 
@@ -336,12 +338,7 @@ public class EditVideo extends AppCompatActivity {
         removeObstruction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                String postUrl= "https://18.191.169.57:8080/";
-//                String postUrl= "https://127.0.0.1:5000/";
-//                String postUrl= "http://192.168.1.9:5000/";
-//                String postUrl= "http://30.40.73.47:5000/";   //Works fine for local host
-//                String postUrl= "https://18.221.206.247:8080/";
-                String postUrl= "http://172.16.0.1:8080/";
+                String postUrl= "http://18.216.137.29:8080";
 
 
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -372,52 +369,53 @@ public class EditVideo extends AppCompatActivity {
 
     }
 
-//    private void setSpeedUpListeners() {
-//
-//        speedupDone.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                speedUp();
-//                bsheetMusic.setState(BottomSheetBehavior.STATE_HIDDEN);
-//                initiateTask();
-//            }
-//        });
-//
-//        speedupClose.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                bsheetSpeedUp.setState(BottomSheetBehavior.STATE_HIDDEN);
-//            }
-//        });
-//
-//        _x125.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                speedUpVal=(float)1.25;
-//            }
-//        });
-//
-//        _x15.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                speedUpVal=(float)1.5;
-//            }
-//        });
-//
-//        _x175.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                speedUpVal=(float)1.75;
-//            }
-//        });
-//
-//        _x2.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                speedUpVal=(float)2;
-//            }
-//        });
-//    }
+    private void setSpeedUpListeners() {
+
+        speedupDone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                speedUp();
+                bsheetSpeedUp.setState(BottomSheetBehavior.STATE_HIDDEN);
+                initiateTask();
+            }
+        });
+
+        speedupClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                bsheetSpeedUp.setState(BottomSheetBehavior.STATE_HIDDEN);
+            }
+        });
+
+        _x125.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                speedUpVal=(float)1.25;
+            }
+        });
+
+        _x15.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                speedUpVal=(float)1.5;
+            }
+        });
+
+        _x175.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                speedUpVal=(float)1.75;
+            }
+        });
+
+        _x2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                speedUpVal=(float)2;
+//                Toast.makeText(EditVideo.this, "Val: "+Float.toString(speedUpVal), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
     private void setSaveListeners()
     {
@@ -454,27 +452,18 @@ public class EditVideo extends AppCompatActivity {
         saveFileName=findViewById(R.id.saveFileName_saveSheet);
     }
 
-//    private void setSpeedUpViews() {
-//        speedupDone=findViewById(R.id.done_icon_speedupSheet);
-//        speedupClose=findViewById(R.id.cross_icon_speedupSheet);
-//        _x125=findViewById(R.id.speed125_icon_speedUpSheet);
-//        _x15=findViewById(R.id.speed15_icon_speedUpSheet);
-//        _x175=findViewById(R.id.speed175_icon_speedUpSheet);
-//        _x2=findViewById(R.id.speed2_icon_speedUpSheet);
-//    }
+    private void setSpeedUpViews() {
+        speedupDone=findViewById(R.id.done_icon_fastMotionSheet);
+        speedupClose=findViewById(R.id.cross_icon_fastMotionSheet);
+        _x125=findViewById(R.id.firstButton);
+        _x15=findViewById(R.id.secondButton);
+        _x175=findViewById(R.id.thirdButton);
+        _x2=findViewById(R.id.fourthButton);
+    }
 
     private void assignSheetViews()
     {
-
-        speedUpPopup=findViewById(R.id.speedup_bottom_sheet_dialogue);
-        if (speedUpPopup==null){
-            Toast.makeText(this, "gahahahaha", Toast.LENGTH_SHORT).show();
-            Log.d("popup", "assignSheetViews: was null from speedup ");
-        }
-        else{
-            Toast.makeText(this, "* * * wourk * * * by speedup", Toast.LENGTH_LONG).show();
-            Log.d("popup", "assignSheetViews: was * * * SUCCESSFUL * * * by speedup ");
-        }
+        speedUpPopup=findViewById(R.id.fastMotionBottomSheet);
         bsheetSpeedUp=BottomSheetBehavior.from(speedUpPopup);
         bsheetSpeedUp.setState(BottomSheetBehavior.STATE_HIDDEN);
 
@@ -608,9 +597,20 @@ public class EditVideo extends AppCompatActivity {
         progress=findViewById(R.id.prog_editVideo);
         progress.setMax(100);
 
+        float additive=1;
+        Log.d("prog", "initiateTas valk: "+cmd[3]);
+        if (cmd[3].equals("-filter_complex")){
+//            additive=100/56;
+            progress.setMax(56);
+            Log.d("prog", "initiateTask: additive val "+additive+", max: "+progress.getMax());
+        }
+
         if (_dest==null)
             manageDestNDirs();
         String path=_dest.getAbsolutePath();
+
+//        Toast.makeText(this, "Des path: "+path, Toast.LENGTH_LONG).show();
+//        Log.d("mypath", "initiateTask: "+path+", val: "+speedUpVal);
 
         final Intent myServiceInt=new Intent(EditVideo.this, MyProgressService.class);
         myServiceInt.putExtra("dur",  dur);
@@ -618,6 +618,7 @@ public class EditVideo extends AppCompatActivity {
         myServiceInt.putExtra("dest", path);
         startService(myServiceInt);
 
+        final float finalAdditive = additive;
         myConn=new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
@@ -633,10 +634,11 @@ public class EditVideo extends AppCompatActivity {
                         progress.setVisibility(View.VISIBLE);
 
                         if (resu<100){
-                            progress.setProgress(resu);
+                            progress.setProgress((int)(resu* finalAdditive));
+                            Log.d("prog", "onChanged: "+(finalAdditive*resu));
                         }
 
-                        if (resu>=100)
+                        if (resu>=(progress.getMax()))
                         {
                             progress.setProgress(100);
                             stopService(myServiceInt);
@@ -649,7 +651,7 @@ public class EditVideo extends AppCompatActivity {
                             String tName="";
 
                             if (cmd[0].equals("-i")){
-                                tName="Music Added Successfully";
+                                tName="Operation Completed Successfully";
                             }
                             else{
                                 tName="Video Cropped Successfully";
@@ -1004,16 +1006,54 @@ public class EditVideo extends AppCompatActivity {
                 _dest.getAbsolutePath()};
     }
 
-//    private void speedUp(){
-//
-//        manageDestNDirs();
-//
-//        cmd=new String[]{"-i", selectedVideoPath,"-filter_complex",
-//                "\"[0:v]setpts=",Float.toString(1/speedUpVal),"*PTS[v];",
-//                "[0:a]atempo=",Float.toString(speedUpVal),"[a]\"",
-//                "-map \"[v]\" -map \"[a]\"", _dest.getAbsolutePath()};
-//
-//    }
+    private void speedUp(){
+
+        manageDestNDirs();
+        cmd = new String[]{"-y",
+                "-i",
+                selectedVideoPath,
+                "-filter_complex",
+                "[0:v]setpts="+(Float.toString(1/speedUpVal))+"*PTS[v];[0:a]atempo="+(Float.toString(speedUpVal))+"[a]",
+                "-map",
+                "[v]",
+                "-map",
+                "[a]",
+                "-b:v",
+                "2097k",
+                "-r",
+                "60",
+                "-vcodec",
+                "mpeg4",
+                _dest.getAbsolutePath()};
+
+//        cmd = new String[]{
+//                "-i", selectedVideoPath,
+//                "-filter_complex",
+//                "[0:v]setpts="+(Float.toString(1/speedUpVal))+"*PTS[v];[0:a]atempo="+(Float.toString(speedUpVal))+"[a]",
+//                "-threads",
+////                "5",
+////                "-preset",
+//                "ultrafast",
+////                "-strict",
+////                "-2",
+//                _dest.getAbsolutePath()};
+
+//        cmd=new String[]{"-i",
+//                selectedVideoPath,
+//                "-filter_complex",
+//                "[0:v]setpts="+(Float.toString(1/speedUpVal))+"*PTS[v];[0:a]atempo="+(Float.toString(speedUpVal))+"[a]",
+//                "-map",
+//                "[v]",
+//                "-map",
+//                "[a]",
+//                _dest.getAbsolutePath()};
+
+//        cmd= new String[]{"-i", selectedVideoPath, "-vf",
+//                "\"setpts="+Float.toString(1/speedUpVal)+"*PTS\"",_dest.getAbsolutePath() };
+
+//        Toast.makeText(this, "Command made: "+cmd, Toast.LENGTH_SHORT).show();
+        Log.d("cmdMyFren", "speedUp: "+speedUpVal+"\ncmd: "+ Arrays.toString(cmd));
+    }
 
     private void manageDestNDirs() {
         File dirUpr= new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),"/Obstructy");
