@@ -19,6 +19,8 @@ import com.github.hiteshsondhi88.libffmpeg.exceptions.FFmpegNotSupportedExceptio
 
 public class MyProgressService extends Service {
 
+    public static int myTime;
+
     FFmpeg myFfmpegObj;
     int dur;
     String[] cmd;
@@ -93,6 +95,7 @@ public class MyProgressService extends Service {
 
                     pctg.setValue((int)((totalTime/dur)*100));
 
+                    myTime=(int) (dur-totalTime);
 
                 }
                 super.onProgress(message);

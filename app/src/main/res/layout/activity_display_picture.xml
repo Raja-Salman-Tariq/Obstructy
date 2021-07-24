@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".DisplayPicture"
+    android:background="@drawable/background3">
+
+    <ImageButton
+        android:id="@+id/displayPictureBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:background="@drawable/ic_back_arrow">
+
+    </ImageButton>
+
+    <ImageView
+        android:id="@+id/logo_DisplayPictureScreen"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/app_bar_logo"
+        android:translationY="-170dp">
+    </ImageView>
+
+    <ImageView
+        android:id="@+id/displayPicture"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_centerInParent="true">
+    </ImageView>
+
+    <Button
+        android:id="@+id/saveImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="80dp"
+        android:text="Save"
+        android:textAllCaps="false"
+        android:background="@drawable/card2">
+
+    </Button>
+
+
+
+
+</RelativeLayout>

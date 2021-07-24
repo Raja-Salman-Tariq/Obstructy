@@ -5,42 +5,34 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
-import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.provider.MediaStore;
-import android.text.InputType;
 import android.util.Base64;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.MediaController;
 import android.widget.RelativeLayout;
-import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -51,14 +43,10 @@ import com.facebook.FacebookSdk;
 import com.facebook.share.model.ShareVideo;
 import com.facebook.share.model.ShareVideoContent;
 import com.facebook.share.widget.ShareDialog;
-import com.github.hiteshsondhi88.libffmpeg.ExecuteBinaryResponseHandler;
-import com.github.hiteshsondhi88.libffmpeg.FFmpeg;
-import com.github.hiteshsondhi88.libffmpeg.LoadBinaryResponseHandler;
-import com.github.hiteshsondhi88.libffmpeg.exceptions.FFmpegCommandAlreadyRunningException;
-import com.github.hiteshsondhi88.libffmpeg.exceptions.FFmpegNotSupportedException;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 import org.florescu.android.rangeseekbar.RangeSeekBar;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -125,11 +113,11 @@ public class EditVideo extends AppCompatActivity {
     TextView musicFileName;
     //<------------------------------------------>//
 
-//    //<=================SPEEDUP SHEET VARIABLES=================>//
+    //<=================SPEEDUP SHEET VARIABLES=================>//
     ImageButton speedupDone, speedupClose;
     ImageButton _x125, _x15, _x175, _x2;
     float speedUpVal;
-//    //<------------------------------------------>//
+    //<------------------------------------------>//
 
     //<=================BOTTOM SHEET VARIABLES=================>//
     RelativeLayout trimPopup, musicpopup,savePopup, speedUpPopup;
@@ -141,7 +129,7 @@ public class EditVideo extends AppCompatActivity {
 
     //<=================EDIT VIDEO LAYOUT VARIABLES=================>//
     private ImageButton removeObstruction;
-    private ImageButton extractFrame;
+    private ImageButton muteVideo;
     private ImageButton addFilter;
     private ImageButton addMusic;
     private ImageButton trimVideo;
@@ -174,6 +162,29 @@ public class EditVideo extends AppCompatActivity {
         assignSheetViews();
         setVideoView();
         assignEditViews();
+
+        muteVideo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(EditVideo.this, "Muting...", Toast.LENGTH_SHORT).show();
+
+                manageDestNDirs();
+
+                cmd=new String[]{
+                        "-i",
+                        selectedVideoPath,
+                        "-c",
+                        "copy",
+                        "-an",
+                        _dest.getAbsolutePath()
+                };
+//                cmd=new String[]{"-ss", ""+start/1000, "-y", "-i", selectedVideoPath, "-t", ""+(stop-start)/1000,
+//                        "-vcodec", "mpeg4", "-b:v", "2097152", "-b:a", "48000", "-ac", "2", "-ar", "22050",
+//                        _dest.getAbsolutePath()};
+
+                initiateTask();
+            }
+        });
 
         speedUp.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -338,8 +349,8 @@ public class EditVideo extends AppCompatActivity {
         removeObstruction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String postUrl= "http://18.216.137.29:8080";
 
+                String postUrl= "http://192.168.100.34:5000";
 
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                 try {
@@ -483,7 +494,7 @@ public class EditVideo extends AppCompatActivity {
     private void assignEditViews()
     {
         removeObstruction=findViewById(R.id.removeObstructionOption);
-        extractFrame=findViewById(R.id.extractFrameOption);
+        muteVideo =findViewById(R.id.muteVideoOption);
         addFilter=findViewById(R.id.addFilterOption);
         addMusic=findViewById(R.id.addMusicOption);
         trimVideo=findViewById(R.id.trimOption);
@@ -638,8 +649,16 @@ public class EditVideo extends AppCompatActivity {
                             Log.d("prog", "onChanged: "+(finalAdditive*resu));
                         }
 
-                        if (resu>=(progress.getMax()))
+                        if (resu>=(progress.getMax()) || MyProgressService.myTime<=0 || resu>=90)
                         {
+                            if(resu>=90){
+                                try {
+                                    TimeUnit.SECONDS.sleep(3);
+                                    progress.setVisibility(View.INVISIBLE);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
                             progress.setProgress(100);
                             stopService(myServiceInt);
 
@@ -654,7 +673,7 @@ public class EditVideo extends AppCompatActivity {
                                 tName="Operation Completed Successfully";
                             }
                             else{
-                                tName="Video Cropped Successfully";
+                                tName="Operation Completed Successfully";
                             }
 
                             Toast.makeText(EditVideo.this, tName, Toast.LENGTH_SHORT).show();
@@ -757,7 +776,11 @@ public class EditVideo extends AppCompatActivity {
 
     void postRequest(String postUrl, RequestBody postBody) {
 
-        OkHttpClient client = new OkHttpClient();
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(120, TimeUnit.SECONDS)
+                .writeTimeout(120, TimeUnit.SECONDS)
+                .readTimeout(120, TimeUnit.SECONDS)
+                .build();
 
         Request request = new Request.Builder()
                 .url(postUrl)
@@ -768,9 +791,7 @@ public class EditVideo extends AppCompatActivity {
             @Override
             public void onFailure(Call call, final IOException e) {
                 // Cancel the post on failure.
-
                 call.cancel();
-
                 // In order to access the TextView inside the UI thread, the code is executed inside runOnUiThread()
                 runOnUiThread(new Runnable() {
                     @Override
@@ -783,15 +804,24 @@ public class EditVideo extends AppCompatActivity {
 
             @Override
             public void onResponse(Call call, final Response response) throws IOException {
+                try {
+                    JSONObject jsonObject = new JSONObject(response.body().string());
+                    String encodedString=jsonObject.get("image").toString();
+                    final String pureBase64Encoded = encodedString.substring(encodedString.indexOf(",")  + 1);
+                    final byte[] decodedBytes = Base64.decode(pureBase64Encoded, Base64.DEFAULT);
+
+                    Intent intent=new Intent(EditVideo.this,DisplayPicture.class);
+                    intent.putExtra("DecodedBytes",decodedBytes);
+                    startActivity(intent);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
                 // In order to access the TextView inside the UI thread, the code is executed inside runOnUiThread()
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        try {
-                            Toast.makeText(EditVideo.this, response.body().string(),Toast.LENGTH_LONG).show();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                        //UI changes (if any) to be done here//
                     }
                 });
             }
