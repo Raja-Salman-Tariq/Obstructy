@@ -32,25 +32,20 @@ To utilise the features Obstructy has to offer, you will have to follow the foll
 
 ## Raw Results
 ## Terraces
-Original:
+Original (LEFT); Raw Background (CENTER); Raw Foreground (RIGHT)
 
 ![image](https://user-images.githubusercontent.com/46603998/174275910-cd571803-9433-464a-80be-633e7d43a852.png)
-Raw Background
 ![image](https://user-images.githubusercontent.com/46603998/174276166-769450cc-22ef-424c-b75e-a4378f7a70ba.png)
-Raw Foreground
 ![image](https://user-images.githubusercontent.com/46603998/174276064-3b93e488-806d-480e-9af9-10d45d66be62.png)
 
 ## Windows
-Original:
+Original (LEFT); Raw Background (CENTER); Raw Foreground (RIGHT)
 ![image](https://user-images.githubusercontent.com/46603998/174276360-9c18c7be-6d5e-45bd-82e7-5b016e50ad1d.png)
-Raw Background
 ![image](https://user-images.githubusercontent.com/46603998/174276414-7f31be0f-0932-44e7-a147-034b470ffe1a.png)
-Raw Foreground
 ![image](https://user-images.githubusercontent.com/46603998/174276463-cfe2527c-7bc7-48f1-a142-bd4a2b9cdda2.png)
 
 ## Full Demo
 Please reach out
-
 ## Sample Obstruction Removal Demo
 https://bit.ly/3N25Tbv 
 
