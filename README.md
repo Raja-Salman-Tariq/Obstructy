@@ -41,7 +41,7 @@ Original (LEFT); Raw Background (CENTER); Raw Foreground (RIGHT)
 ## Windows
 Original (LEFT); Raw Background (CENTER); Raw Foreground (RIGHT)
 
-<img src="https://user-images.githubusercontent.com/46603998/174276360-9c18c7be-6d5e-45bd-82e7-5b016e50ad1d.png" width="100" height="200">
+<img src="https://user-images.githubusercontent.com/46603998/174276360-9c18c7be-6d5e-45bd-82e7-5b016e50ad1d.png" width="200" height="400">
 ![image](https://user-images.githubusercontent.com/46603998/174276414-7f31be0f-0932-44e7-a147-034b470ffe1a.png)
 ![image](https://user-images.githubusercontent.com/46603998/174276463-cfe2527c-7bc7-48f1-a142-bd4a2b9cdda2.png)
 
